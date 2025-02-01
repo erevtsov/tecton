@@ -5,16 +5,22 @@ description = "quantitive investment library"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dagit>=1.9.10",
     "dagster>=1.9.10",
+    "dagster-duckdb>=0.25.11",
+    "ipython>=8.32.0",
     "numpy>=2.2.2",
+    "pandas>=2.2.3",
 ]
 [dependency-groups]
 dev = [
-    "ruff>=0.9.3",
+    "ruff>=0.9.4",
 ]
 
 [[tool.uv.index]]
+name = "pybuild"
+url = "https://aam.jfrog.io/artifactory/api/pypi/pybuild/simple"
+
+[[tool.uv.index]]
 name = "pypi"
-url = "https://pypi.org/simple"
+url = "https://aam.jfrog.io/artifactory/api/pypi/pypi/simple"
 default = true
