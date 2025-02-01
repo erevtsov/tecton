@@ -819,6 +819,10 @@ dependencies = [
     { name = "dagit" },
     { name = "dagster" },
     { name = "numpy" },
+]
+
+[package.dev-dependencies]
+dev = [
     { name = "ruff" },
 ]
 
@@ -827,8 +831,10 @@ requires-dist = [
     { name = "dagit", specifier = ">=1.9.10" },
     { name = "dagster", specifier = ">=1.9.10" },
     { name = "numpy", specifier = ">=2.2.2" },
-    { name = "ruff", specifier = ">=0.9.3" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.9.3" }]
 
 [[package]]
 name = "requests"

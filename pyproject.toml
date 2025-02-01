@@ -8,5 +8,13 @@ dependencies = [
     "dagit>=1.9.10",
     "dagster>=1.9.10",
     "numpy>=2.2.2",
+]
+[dependency-groups]
+dev = [
     "ruff>=0.9.3",
 ]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
