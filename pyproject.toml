@@ -28,3 +28,53 @@ default = true
 [tool.dagster]
 module_name = "quantlib.ingestion.definitions"
 code_location_name = "quantlib_ingestion"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+per-file-ignores ={"Element.py" = ['F401']}
+
+# https://docs.astral.sh/ruff/rules/
+select = [
+    "E", # pycodestyle errors
+    "F", # pyflakes
+    "W", # pydocstyle warning
+    "N", # pep8-naming
+    "UP", # pyupgrade
+]
+
+ignore = [
+    #
+    "D100", # missing docstring in public module
+    "N999", # invalid module name
+    # Lint rules that conflict with format rules
+    # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "COM812",  # missing-trailing-comma
+    "COM819",  # prohibited-trailing-comma
+    "D206",  # indent-with-spaces
+    "D300",  # triple-single-quotes
+    "E111",  # indentation-with-invalid-multiple
+    "E114",  # indentation-with-invalid-multiple-comment
+    "E117",  # over-indented
+    "E501",  # line-too-long
+    "ISC001",  # single-line-implicit-string-concatenation
+    "ISC002",  # multi-line-implicit-string-concatenation
+    "Q000",  # bad-quotes-inline-string
+    "Q001",  # bad-quotes-multiline-string
+    "Q002",  # bad-quotes-docstring
+    "Q003",  # avoidable-escaped-quote
+    "W191",  # tab-indentation
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Use single quotes for non-triple-quoted strings.
+quote-style = "single"
