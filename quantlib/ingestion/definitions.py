@@ -1,9 +1,11 @@
 # Dagster 1.0+ style
-from dagster import Definitions
+import dagster as dg
+
 from .jobs import hello_job
 
-defs = Definitions(
+defs = dg.Definitions(
     jobs=[hello_job],
+    assets=[],
     # resources=[],
     # schedules=[],
     # sensors=[],
