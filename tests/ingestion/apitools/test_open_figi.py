@@ -1,5 +1,5 @@
 import json
-from synqvest.ingestion.apitools.open_figi import search_call, mapping_call
+from tecton.ingestion.apitools.open_figi import search_call, mapping_call
 
 
 def test_search_call():
