@@ -1,4 +1,3 @@
-import json
 import os
 from .api_base import api_call, JsonType
 from enum import Enum

@@ -1,12 +1,13 @@
-import pytest
 import json
 from quantlib.ingestion.apitools.open_figi import search_call, mapping_call
+
 
 def test_search_call():
     search_request = {'query': 'APPLE'}
     print('Making a search request:', search_request)
     search_response = search_call(data=search_request)
     print('Search response:', json.dumps(search_response, indent=2))
+
 
 def test_mapping_call():
     mapping_request = [
