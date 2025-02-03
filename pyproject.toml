@@ -9,6 +9,7 @@ dependencies = [
     "dagster-duckdb>=0.25.11",
     "dagster-webserver>=1.9.11",
     "polars>=1.21.0",
+    "python-dotenv>=1.0.1",
 ]
 [dependency-groups]
 dev = [
@@ -18,11 +19,11 @@ dev = [
 
 [[tool.uv.index]]
 name = "pybuild"
-url = "https://aam.jfrog.io/artifactory/api/pypi/pybuild/simple"
+url = "https://pypi.org/simple"
 
 [[tool.uv.index]]
 name = "pypi"
-url = "https://aam.jfrog.io/artifactory/api/pypi/pypi/simple"
+url = "https://pypi.org/simple"
 default = true
 
 [tool.dagster]
