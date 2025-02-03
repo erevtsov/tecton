@@ -1,10 +1,11 @@
 [project]
-name = "synqvest"
+name = "tecton"
 version = "0.1.0"
 description = "quantitive investment library"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "boto3>=1.36.11",
     "dagster>=1.9.10",
     "dagster-duckdb>=0.25.11",
     "dagster-webserver>=1.9.11",
@@ -28,8 +29,8 @@ url = "https://pypi.org/simple"
 default = true
 
 [tool.dagster]
-module_name = "synqvest.ingestion.definitions"
-code_location_name = "synqvest"
+module_name = "tecton.ingestion.definitions"
+code_location_name = "tecton"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
