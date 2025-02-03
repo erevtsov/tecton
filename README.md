@@ -11,3 +11,6 @@ uv sync
 #### .bashrc
 source ~/.local/bin/env
 #source .venv/bin/activate
+
+### TODOs
+- lookback capability
