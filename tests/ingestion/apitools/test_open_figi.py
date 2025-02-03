@@ -1,5 +1,5 @@
 import json
-from quantlib.ingestion.apitools.open_figi import search_call, mapping_call
+from synqvest.ingestion.apitools.open_figi import search_call, mapping_call
 
 
 def test_search_call():

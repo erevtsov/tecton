@@ -1,4 +1,4 @@
-# quantlib
+# synqvest
 
 ### Notes on env setup:
 
