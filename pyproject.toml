@@ -1,5 +1,5 @@
 [project]
-name = "quantlib"
+name = "synqvest"
 version = "0.1.0"
 description = "quantitive investment library"
 readme = "README.md"
@@ -28,8 +28,8 @@ url = "https://pypi.org/simple"
 default = true
 
 [tool.dagster]
-module_name = "quantlib.ingestion.definitions"
-code_location_name = "quantlib_ingestion"
+module_name = "synqvest.ingestion.definitions"
+code_location_name = "synqvest"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
