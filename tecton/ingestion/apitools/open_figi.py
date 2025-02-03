@@ -5,7 +5,7 @@ import urllib.request
 import urllib.parse
 
 
-OPENFIGI_API_KEY = os.environ.get('OPENFIGI_API_KEY', None)  # Put your API key here or in env var
+OPENFIGI_API_KEY = os.environ['OPENFIGI_API_KEY']
 
 OPENFIGI_BASE_URL = 'https://api.openfigi.com'
 
