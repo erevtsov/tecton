@@ -24,9 +24,19 @@ class Mantle:
         cfg = self._config[table]
 
         s3_path = f's3://{self._s3_bucket}{cfg["path"]}*.parquet'
-        table = self._con.read_parquet(s3_path)
+        table = self.get_files(s3_path)
         if start_date:
             table = table.filter(table.date >= start_date)
         if end_date:
             table = table.filter(table.date <= end_date)
         return table
+
+    def get_files(self, path: str) -> ibis.expr.types.Table:
+        p = Path(path)
+        match p.suffix:
+            case '.csv':
+                return self._con.read_csv(path)
+            case ('.parquet', '.pq'):
+                return self._con.read_parquet(path)
+            case _:
+                raise ValueError(f'Unsupported file type: {p.suffix}')

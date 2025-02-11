@@ -7,7 +7,7 @@ import dagster_aws.s3 as s3
 import polars as pl
 import yaml
 
-from tecton.dal.loader import Mantle
+from tecton.dal.mantle import Mantle
 from tecton.ingestion.apitools.alpha_vantage import etf_profile
 from tecton.ingestion.apitools.open_figi import map_by_ticker
 from tecton.ingestion.apitools.yfinance import get_equity_market_data
