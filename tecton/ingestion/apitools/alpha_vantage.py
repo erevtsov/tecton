@@ -1,8 +1,11 @@
 import os
-from .api_base import api_call, JsonType
 import urllib.parse
 
-ALPHA_VANTAGE_API_KEY = 'demo'  # os.environ['ALPHAVANTAGE_API_KEY']
+import pandas as pd
+
+from .api_base import JsonType, api_call
+
+ALPHA_VANTAGE_API_KEY = os.environ['ALPHAVANTAGE_API_KEY']
 
 ALPHA_VANTAGE_BASE_URL = 'https://www.alphavantage.co'
 
@@ -20,5 +23,9 @@ def base_call(function: str, params: dict) -> JsonType:
     )
 
 
-def etf_profile(symbol: str) -> JsonType:
-    return base_call(function='ETF_PROFILE', params={'symbol': symbol})
+def etf_profile(symbol: str) -> pd.DataFrame:
+    res = base_call(function='ETF_PROFILE', params={'symbol': symbol})
+    res = pd.DataFrame(res['holdings'])
+    res['weight'] = res['weight'].astype(float)
+    res['composite_symbol'] = symbol
+    return res
