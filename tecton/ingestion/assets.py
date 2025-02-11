@@ -7,7 +7,7 @@ import dagster_aws.s3 as s3
 import polars as pl
 import yaml
 
-from tecton.dal.loader import Scout
+from tecton.dal.loader import Mantle
 from tecton.ingestion.apitools.alpha_vantage import etf_profile
 from tecton.ingestion.apitools.open_figi import map_by_ticker
 from tecton.ingestion.apitools.yfinance import get_equity_market_data
@@ -66,8 +66,8 @@ def equity_universe(s3: s3.S3Resource):
     # load the ETF Config
     etfs = pl.DataFrame(yaml.safe_load(open(CONFIG_FILE_PATH))['equities']['etf_universe'])
     # get all the etf_weights given a date
-    s = Scout()
-    table = s.fetch('etf_weights', start_date=DATE, end_date=DATE).to_polars()
+    s = Mantle()
+    table = s.select('etf_weights', start_date=DATE, end_date=DATE).to_polars()
     # list of equities to map
     # set up
     equities = pl.concat([table.unique(subset=['symbol', 'exch_code'])['symbol', 'exch_code'], etfs])
@@ -86,8 +86,8 @@ def equity_universe(s3: s3.S3Resource):
 @dg.asset(name='equity_prices', deps=[equity_universe.key])
 def equity_prices(s3: s3.S3Resource):
     # get the equity universe
-    s = Scout()
-    table = s.fetch('equity_universe', start_date=DATE, end_date=DATE)
+    s = Mantle()
+    table = s.select('equity_universe', start_date=DATE, end_date=DATE)
     # active only (should i throw these out earlier?)
     table = table.filter(table.active).to_polars()
     # get the market data
