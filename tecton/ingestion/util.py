@@ -1,12 +1,13 @@
 import io
 import re
 
+import pandas as pd
 import polars as pl
 import pyarrow as pa
 import pyarrow.parquet as pq
 
 
-def write_bytes(table):
+def write_bytes(table: pa.Table | pl.DataFrame | pd.DataFrame) -> io.BytesIO:
     if isinstance(table, pa.Table):
         table = table
     elif isinstance(table, pl.DataFrame):
