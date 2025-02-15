@@ -20,7 +20,13 @@ class Mantle:
         absolute_path = Path(Path(__file__).resolve().parent, 'table_config.yaml').resolve()
         self._config = yaml.safe_load(open(absolute_path))
 
-    def select(self, table: str, start_date: dt.date = None, end_date: dt.date = None) -> ibis.expr.types.Table:
+    def select(
+        self,
+        table: str,
+        start_date: dt.date = None,
+        end_date: dt.date = None,
+        columns: list | tuple = None,
+    ) -> ibis.expr.types.Table:
         cfg = self._config[table]
 
         s3_path = f's3://{self._s3_bucket}{cfg["path"]}*.parquet'
@@ -29,6 +35,8 @@ class Mantle:
             table = table.filter(table.date >= start_date)
         if end_date:
             table = table.filter(table.date <= end_date)
+        if columns is not None:
+            table = table.select(columns)
         return table
 
     def get_files(self, path: str) -> ibis.expr.types.Table:

@@ -34,7 +34,7 @@ url = "https://pypi.org/simple"
 default = true
 
 [tool.dagster]
-module_name = "tecton.ingestion.assets"
+module_name = "tecton.ingestion.futures.assets"
 code_location_name = "tecton"
 
 [tool.pytest.ini_options]

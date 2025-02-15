@@ -1,5 +1,7 @@
 from enum import Enum
 
+import polars as pl
+
 
 class StatType(Enum):
     opening_price = 1  # The price and quantity of the first trade of an instrument.
@@ -12,3 +14,121 @@ class StatType(Enum):
     highest_bid = 8  # The highest bid price for an instrument during the trading session.
     open_interest = 9  # The current number of outstanding contracts of an instrument.
     fixing_price = 10  # The volume-weighted average price (VWAP) for a fixing period.
+
+
+def process_definition_data(data: pl.DataFrame) -> pl.DataFrame:
+    """
+    This is expecting a data frame of "raw" definition data (i.e. from databento files or API)
+
+    Notes on relevant columns:
+        ts_recv = close date
+        asset = futures root
+        instrument_class
+        raw_symbol = ticker
+        instrument_id = unique id to use for joins
+        activation
+        expiration
+
+        unit_of_measure_qty = contrat size
+        unit_of_measure = quote units
+
+        min_price_increment = tick size
+        min_price_increment_amount = tick value
+        point_value = min_price_increment_amount / min_price_increment
+        contract_value = price * point_value
+
+        display_factor = "unit"
+
+        maturity_year
+        maturity_month
+    """
+    desc_cols = (
+        'ts_ref',
+        'asset',
+        'group',
+        'exchange',
+        'security_type',
+        'currency',
+        'settl_currency',
+        'cfi',
+        'raw_symbol',
+        'instrument_id',
+        'activation',
+        'expiration',
+        'unit_of_measure_qty',
+        'unit_of_measure',
+        'min_price_increment',
+        'min_price_increment_amount',
+        'point_value',
+        'display_factor',
+        'settl_price_type',
+    )
+    col_renamings = {
+        'unit_of_measure_qty': 'contract_size',
+        'unit_of_measure': 'quote_units',
+        'min_price_increment': 'tick_size',
+        'min_price_increment_amount': 'tick_value',
+    }
+    # convert data to lazy
+    output = data.lazy()
+    # column dtype changes
+    output = output.with_columns(pl.col('ts_recv').cast(pl.Date).alias('ts_ref'))
+    # Sort the DataFrame by 'ts_recv' in descending order, then drop duplicates based on group columns.
+    # keeping first since that's the latest entry
+    output = output.sort('ts_recv', descending=True).unique(
+        subset=['instrument_id', 'ts_ref'],
+        keep='first',
+    )
+    # apply filters
+    # S=spread, F=futures; keep only futures
+    filters = [pl.col('instrument_class') == 'F']
+    output = output.filter(filters)
+    # derive columns
+    output = output.with_columns(
+        (pl.col('min_price_increment_amount') / pl.col('min_price_increment')).alias('point_value')
+    )
+    # select relevant columns
+    output = output.select(desc_cols)
+    # rename columns and return
+    output = output.collect().rename(col_renamings)
+    return output
+
+
+def process_statistics_data(data: pl.DataFrame) -> pl.DataFrame:
+    """
+    Process statistics data for futures assets.
+    """
+
+    output = data.lazy()
+    #
+    output = output.with_columns(pl.col('ts_ref').cast(pl.Date))
+    # Sort the DataFrame by 'ts_event' in descending order, then drop duplicates based on group columns.
+    output = output.sort('ts_event', descending=True).unique(
+        subset=['instrument_id', 'ts_ref', 'stat_type'],
+        keep='first',
+    )
+
+    mapping = {member.value: member.name for member in StatType}
+    # Map the 'stat_type' column to enum string using the dict
+    output = output.with_columns(
+        pl.col('stat_type').map_elements(lambda x: mapping.get(x, 'Unknown'), return_dtype=pl.String).alias('stat_name')
+    )
+    # split the frame into quantities and prices
+    quantities = output.filter((pl.col('quantity') < pl.Int32.max()) & (pl.col('quantity').is_not_null())).collect()
+    prices = output.filter((pl.col('price').is_not_null()) & (pl.col('price') < pl.Int64.max())).collect()
+    # pivot quantities and prices and join
+    key = ['instrument_id', 'ts_ref']
+    quantities = quantities.pivot(
+        values='quantity',
+        index=key,
+        on='stat_name',
+        aggregate_function='first',
+    ).drop_nulls(subset=key)
+    prices = prices.pivot(
+        values='price',
+        index=key,
+        on='stat_name',
+        aggregate_function='first',
+    ).drop_nulls(subset=key)
+    output = quantities.join(prices, on=key, how='full', validate='1:1', coalesce=True)
+    return output

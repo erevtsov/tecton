@@ -4,3 +4,6 @@ equity_universe:
   path: '/equity/universe/'
 equity_prices:
   path: '/equity/prices/'
+futures:
+  path: '/futures/'
+  frequency: 'monthly'
