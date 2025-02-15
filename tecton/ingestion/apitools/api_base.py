@@ -1,7 +1,10 @@
-import urllib
+import logging
+import urllib.request  # nopq
 import json
 
 JsonType = None | int | str | bool | list['JsonType'] | dict[str, 'JsonType']
+
+logger = logging.getLogger(__name__)
 
 
 def api_call(
@@ -10,6 +13,7 @@ def api_call(
     data: dict | None = None,
     method: str = 'POST',
 ) -> JsonType:
+    logger.info(f'Making API call: path={path}, headers={headers}, method={method}')
     request = urllib.request.Request(
         url=path,
         data=data and bytes(json.dumps(data), encoding='utf-8'),

@@ -5,12 +5,17 @@ description = "quantitive investment library"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alpha-vantage>=3.0.0",
     "boto3>=1.36.11",
     "dagster>=1.9.10",
+    "dagster-aws>=0.25.11",
     "dagster-duckdb>=0.25.11",
     "dagster-webserver>=1.9.11",
+    "ibis-framework[duckdb]>=10.0.0",
     "polars>=1.21.0",
+    "pyarrow>=19.0.0",
     "python-dotenv>=1.0.1",
+    "yfinance>=0.2.52",
 ]
 [dependency-groups]
 dev = [
@@ -29,7 +34,7 @@ url = "https://pypi.org/simple"
 default = true
 
 [tool.dagster]
-module_name = "tecton.ingestion.definitions"
+module_name = "tecton.ingestion.futures.assets"
 code_location_name = "tecton"
 
 [tool.pytest.ini_options]

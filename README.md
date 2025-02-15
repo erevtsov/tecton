@@ -19,7 +19,8 @@ source .venv/bin/activate
 
 ```
 from tecton.dal.loader import Scout
-Scout.fetch()
+
+Scout.fetch(Scout.tables.universe, start, end, elements=[])
 
 ```
 

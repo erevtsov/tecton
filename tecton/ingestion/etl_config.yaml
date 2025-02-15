@@ -1,0 +1,8 @@
+equities:
+  etf_universe:    
+    - symbol: VOO
+      exch_code: US
+    - symbol: VB
+      exch_code: US
+    - symbol: QQQ
+      exch_code: US
