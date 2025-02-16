@@ -1,19 +1,11 @@
 ## TODOs on Futures Data Ingestion
 
-### Necessary Utils
-<ol>
-    <li>Processor for descriptive data</li>
-    <li>Processor for statistical data</li>
-    <ol>
-        <li>decision tree if multiple data points per day</li>
-    </ol>
-</ol>
-
-### Process Historical Data
-- assume 
-
-### Process Live Data
-- check if file for said month exists? if not, query API?
+- set up API access 
+- implement asset for daily updates (that are still stored to monthly files)
+    - maybe save the daily data in addition to appending to monthly files
+- implement continuous ticker concept
+    - make sure to account for contango
+- add monthly file parsing to Mantle select
 
 #### Misc Helpers/Functionality
 - i need to store the futures universe somewhere
