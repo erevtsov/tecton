@@ -44,7 +44,7 @@ class Mantle:
         match p.suffix:
             case '.csv':
                 return self._con.read_csv(path)
-            case ('.parquet', '.pq'):
+            case '.parquet' | '.pq':
                 return self._con.read_parquet(path)
             case _:
                 raise ValueError(f'Unsupported file type: {p.suffix}')
