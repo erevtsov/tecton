@@ -6,4 +6,5 @@ equity_prices:
   path: '/equity/prices/'
 futures:
   path: '/futures/'
-  frequency: 'monthly'
+futures_cont:
+  path: '/futures-cont/'
