@@ -75,6 +75,7 @@ def process_definition_data(data: pl.DataFrame) -> pl.DataFrame:
     # convert data to lazy
     output = data.lazy()
     # column dtype changes
+
     output = output.with_columns(pl.col('ts_recv').cast(pl.Date).alias('ts_ref'))
     # Sort the DataFrame by 'ts_recv' in descending order, then drop duplicates based on group columns.
     # keeping first since that's the latest entry
@@ -105,7 +106,11 @@ def process_statistics_data(data: pl.DataFrame) -> pl.DataFrame:
 
     output = data.lazy()
     #
-    output = output.with_columns(pl.col('ts_ref').cast(pl.Date))
+    # .str.to_datetime('%Y-%m-%dT%H:%M:%S%.fZ')
+    if output.schema.get('ts_ref') == pl.Utf8:
+        output = output.with_columns(pl.col('ts_ref').str.to_datetime('%Y-%m-%dT%H:%M:%S%.fZ').cast(pl.Date))
+    else:
+        output = output.with_columns(pl.col('ts_ref').cast(pl.Date))
     # Sort the DataFrame by 'ts_event' in descending order, then drop duplicates based on group columns.
     output = output.sort('ts_event', descending=True).unique(
         subset=['instrument_id', 'ts_ref', 'stat_type'],
@@ -118,8 +123,23 @@ def process_statistics_data(data: pl.DataFrame) -> pl.DataFrame:
         pl.col('stat_type').map_elements(lambda x: mapping.get(x, 'Unknown'), return_dtype=pl.String).alias('stat_name')
     )
     # split the frame into quantities and prices
-    quantities = output.filter((pl.col('quantity') < pl.Int32.max()) & (pl.col('quantity').is_not_null())).collect()
-    prices = output.filter((pl.col('price').is_not_null()) & (pl.col('price') < pl.Int64.max())).collect()
+    price_stats = [
+        StatType.settlement_price.value,
+        StatType.opening_price.value,
+        StatType.highest_bid.value,
+        StatType.trading_session_low_price.value,
+        StatType.trading_session_high_price.value,
+        StatType.lowest_offer.value,
+        StatType.fixing_price.value,
+    ]
+    quantity_stats = [
+        StatType.cleared_volume.value,
+        StatType.open_interest.value,
+    ]
+    prices = output.filter(pl.col('stat_type').is_in(price_stats)).collect()
+    quantities = output.filter(pl.col('stat_type').is_in(quantity_stats)).collect()
+    # quantities = output.filter((pl.col('quantity') < pl.Int32.max()) & (pl.col('quantity').is_not_null())).collect()
+    # prices = output.filter((pl.col('price').is_not_null()) & (pl.col('price') < pl.Int64.max())).collect()
     # pivot quantities and prices and join
     key = ['instrument_id', 'ts_ref']
     quantities = quantities.pivot(

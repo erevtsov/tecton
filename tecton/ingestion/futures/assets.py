@@ -14,12 +14,13 @@ from tecton.ingestion.apitools.databento import (
 )
 from tecton.ingestion.util import write_bytes
 
-monthly_partitions = dg.MonthlyPartitionsDefinition(start_date='2024-02-01')
+monthly_partitions = dg.MonthlyPartitionsDefinition(start_date='2010-06-01', end_offset=1)
 
 # TODO: move this to a config file
-stats_core_path = 's3://synqvest/databento/statistics/glbx-mdp3-'
+s3_bucket_name = os.environ['S3_BUCKET']
+stats_core_path = f's3://{s3_bucket_name}/databento/statistics/glbx-mdp3-'
 stats_suffix = '.statistics.csv'
-desc_core_path = 's3://synqvest/databento/definition/glbx-mdp3-'
+desc_core_path = f's3://{s3_bucket_name}/databento/definition/glbx-mdp3-'
 desc_suffix = '.definition.csv'
 
 
