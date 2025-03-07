@@ -8,10 +8,10 @@ import dagster_aws.s3 as s3
 from tecton.dal.mantle import Mantle
 from tecton.ingestion.apitools.aws import get_s3_resource
 from tecton.ingestion.apitools.databento import (
-    construct_continuous_ticker,
     process_definition_data,
     process_statistics_data,
 )
+from tecton.ingestion.futures.ops import construct_continuous_ticker
 from tecton.ingestion.util import write_bytes
 
 monthly_partitions = dg.MonthlyPartitionsDefinition(start_date='2010-06-01', end_offset=1)
