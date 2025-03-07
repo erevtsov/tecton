@@ -38,7 +38,9 @@ def construct_continuous_ticker(data: pl.DataFrame, blend_window: int = 5) -> pl
     merged = front_contract.join(next_contract, on=['date', 'asset'], how='inner').sort(['asset', 'date'])
 
     # Identify roll dates (when OI of front drops below next)
-    merged = merged.with_columns([(pl.col('front_symbol') != pl.col('front_symbol').shift(-1)).alias('roll_flag')])
+    merged = merged.with_columns(
+        [(pl.col('front_symbol') != pl.col('front_symbol').shift(-1)).over(['asset']).alias('roll_flag')]
+    )
 
     # Dynamically expand roll dates for blending window (half before, half after)
     half_window = (blend_window - 1) // 2  # Ensures equal spread around the roll date
