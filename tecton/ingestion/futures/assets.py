@@ -8,18 +8,19 @@ import dagster_aws.s3 as s3
 from tecton.dal.mantle import Mantle
 from tecton.ingestion.apitools.aws import get_s3_resource
 from tecton.ingestion.apitools.databento import (
-    construct_continuous_ticker,
     process_definition_data,
     process_statistics_data,
 )
+from tecton.ingestion.futures.ops import construct_continuous_ticker
 from tecton.ingestion.util import write_bytes
 
-monthly_partitions = dg.MonthlyPartitionsDefinition(start_date='2024-02-01')
+monthly_partitions = dg.MonthlyPartitionsDefinition(start_date='2010-06-01', end_offset=1)
 
 # TODO: move this to a config file
-stats_core_path = 's3://synqvest/databento/statistics/glbx-mdp3-'
+s3_bucket_name = os.environ['S3_BUCKET']
+stats_core_path = f's3://{s3_bucket_name}/databento/statistics/glbx-mdp3-'
 stats_suffix = '.statistics.csv'
-desc_core_path = 's3://synqvest/databento/definition/glbx-mdp3-'
+desc_core_path = f's3://{s3_bucket_name}/databento/definition/glbx-mdp3-'
 desc_suffix = '.definition.csv'
 
 
