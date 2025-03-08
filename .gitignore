@@ -175,3 +175,9 @@ cython_debug/
 devcontainer.json
 /tmp*
 .duckdb.connect*
+
+# dagster storage
+/tecton/ingestion/history
+tecton/ingestion/storage
+tecton/ingestion/schedules
+tecton/ingestion/.telemetry
