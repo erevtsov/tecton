@@ -1,4 +1,5 @@
 from collections import UserDict
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -21,16 +22,23 @@ class Market:
 class Markets(UserDict):
     """
     Collection of Market instances with convenient filtering and lookup methods.
-    Inherits from UserDict to provide dictionary-like behavior.
     """
 
     def __init__(self, markets: dict[str, Market] | None = None):
+        # Initialize with empty dict if None provided
         super().__init__(markets or {})
 
     @classmethod
-    def from_config(cls, symbols: list[str] | None = None) -> 'Markets':
-        """Load markets from config file"""
-        config_path = Path(__file__).parent / 'config.yaml'
+    def from_config(cls, symbols: list[str] | None = None, config_path: Path | None = None) -> 'Markets':
+        """
+        Load markets from config file
+
+        Args:
+            symbols: Optional list of market symbols to load
+            config_path: Optional path to config file. If None, uses default
+        """
+        if config_path is None:
+            config_path = Path(__file__).parent / 'config.yaml'
         with open(config_path) as f:
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
         markets = {}
@@ -44,12 +52,12 @@ class Markets(UserDict):
     @property
     def asset_classes(self) -> set[str]:
         """Get unique asset classes in collection"""
-        return {market.asset_class for market in self.values()}
+        return {market.asset_class for market in self.data.values()}
 
     @property
     def sectors(self) -> set[str]:
         """Get unique sectors in collection"""
-        return {market.sector for market in self.values()}
+        return {market.sector for market in self.data.values()}
 
     def filter(self, asset_class: str | None = None, sector: str | None = None) -> 'Markets':
         """
@@ -63,7 +71,7 @@ class Markets(UserDict):
             New Markets instance containing only matching markets
         """
         filtered = {}
-        for symbol, market in self.items():
+        for symbol, market in self.data.items():
             if asset_class and market.asset_class != asset_class:
                 continue
             if sector and market.sector != sector:
@@ -71,9 +79,9 @@ class Markets(UserDict):
             filtered[symbol] = market
         return Markets(filtered)
 
-    # def __iter__(self) -> Iterator[Market]:
-    #     """Iterate over Market instances rather than symbols"""
-    #     return iter(self.values())
+    def __iter__(self) -> Iterator[Market]:
+        """Iterate over Market instances rather than symbols."""
+        return iter(self.data.values())
 
 
 # Example usage:

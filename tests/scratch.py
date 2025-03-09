@@ -6,8 +6,8 @@ import polars as pl  # noqa
 from tecton.dal.mantle import Mantle
 from tecton.ingestion.apitools.databento import StatType  # noqa
 
-stats_path = 's3://synqvest/databento/statistics/glbx-mdp3-20241201-20241231.statistics.csv'
-desc_path = 's3://synqvest/databento/definition/glbx-mdp3-20241201-20241231.definition.csv'
+stats_path = 's3://synqvest/databento/statistics/glbx-mdp3-20120201-20120229.statistics.csv'
+desc_path = 's3://synqvest/databento/definition/glbx-mdp3-20120201-20120229.definition.csv'
 
 m = Mantle()
 
@@ -65,5 +65,5 @@ If more than one observation per day, de-dupe logic for each
 
 
 stats = m.get_files(stats_path)
-stats_slice = stats.filter((stats.symbol == 'CLZ5') & (stats.stat_type == StatType.settlement_price.value))
+stats_slice = stats.filter((stats.symbol == 'CLZ2') & (stats.stat_type == StatType.settlement_price.value))
 stats_slice = stats_slice.to_pandas()
