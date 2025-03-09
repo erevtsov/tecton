@@ -1,252 +1,352 @@
-'6A':
-  name: Australian Dollar
-  asset_class: FX
-  sector: Developed
-'6B':
-  name: British Pound
-  asset_class: FX
-  sector: Developed
-'6C':
-  name: Canadian Dollar
-  asset_class: FX
-  sector: Developed
-'6E':
-  name: Euro FX
-  asset_class: FX
-  sector: Developed
-'6J':
-  name: Japanese Yen
-  asset_class: FX
-  sector: Developed
-'6L':
-  name: Mexican Peso
-  asset_class: FX
-  sector: Emerging
-'6M':
-  name: Brazilian Real
-  asset_class: FX
-  sector: Emerging
-'6N':
-  name: New Zealand Dollar
-  asset_class: FX
-  sector: Developed
-'6S':
-  name: Swiss Franc
-  asset_class: FX
-  sector: Developed
-'6Z':
-  name: South African Rand
-  asset_class: FX
-  sector: Emerging
-'ALI':
-  name: Aluminum
-  asset_class: Metals
-  sector: Base
-'CL':
-  name: Crude Oil
-  asset_class: Energy
-  sector: Light Sweet
+# Commodity - Agriculture - Dairy
 'DC':
   name: Class III Milk
-  asset_class: Agriculture
-  sector: Dairy
-'EHR':
-  name: E-mini FTSE Emerging Index
-  asset_class: Equity
-  sector: Emerging
-'EMD':
-  name: E-mini S&P MidCap 400
-  asset_class: Equity
-  sector: US
-'ES':
-  name: E-mini S&P 500
-  asset_class: Equity
-  sector: US
-'GC':
-  name: Gold
-  asset_class: Metals
-  sector: Precious
-'GF':
-  name: Feeder Cattle
-  asset_class: Agriculture
-  sector: Livestock
-'HE':
-  name: Lean Hogs
-  asset_class: Agriculture
-  sector: Livestock
-'HG':
-  name: Copper
-  asset_class: Metals
-  sector: Base
-'HO':
-  name: NY Harbor ULSD
-  asset_class: Energy
-  sector: Refined
-'HRC':
-  name: Hot Rolled Coil Steel
-  asset_class: Metals
-  sector: Industrial
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Dairy
+
+# Commodity - Agriculture - Grains
 'KE':
   name: KC HRW Wheat
-  asset_class: Agriculture
-  sector: Grains
-'LBR':
-  name: Lumber
-  asset_class: Agriculture
-  sector: Softs
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Grains
+'ZC':
+  name: Corn
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Grains
+'ZO':
+  name: Oats
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Grains
+'ZR':
+  name: Rough Rice
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Grains
+'ZW':
+  name: Chicago SRW Wheat
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Grains
+
+# Commodity - Agriculture - Livestock
+'GF':
+  name: Feeder Cattle
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Livestock
+'HE':
+  name: Lean Hogs
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Livestock
 'LE':
   name: Live Cattle
-  asset_class: Agriculture
-  sector: Livestock
-'M2K':
-  name: Micro Russell 2000
-  asset_class: Equity
-  sector: US
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Livestock
+'PRK':
+  name: Pork Cutout
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Livestock
+
+# Commodity - Agriculture - Oilseeds
+'ZL':
+  name: Soybean Oil
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Oilseeds
+'ZM':
+  name: Soybean Meal
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Oilseeds
+'ZS':
+  name: Soybeans
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Oilseeds
+
+# Commodity - Agriculture - Softs
+'LBR':
+  name: Lumber
+  asset_class: Commodity
+  sector: Agriculture
+  sub_sector: Softs
+
+# Commodity - Energy - Light Sweet
+'CL':
+  name: Crude Oil
+  asset_class: Commodity
+  sector: Energy
+  sub_sector: Light Sweet
+'MCL':
+  name: Micro Crude Oil
+  asset_class: Commodity
+  sector: Energy
+  sub_sector: Light Sweet
+
+# Commodity - Energy - Natural Gas
+'MNG':
+  name: Micro Natural Gas
+  asset_class: Commodity
+  sector: Energy
+  sub_sector: Natural Gas
+'NG':
+  name: Natural Gas
+  asset_class: Commodity
+  sector: Energy
+  sub_sector: Natural Gas
+
+# Commodity - Energy - Refined
+'HO':
+  name: NY Harbor ULSD
+  asset_class: Commodity
+  sector: Energy
+  sub_sector: Refined
+'RB':
+  name: RBOB Gasoline
+  asset_class: Commodity
+  sector: Energy
+  sub_sector: Refined
+
+# Commodity - Metals - Base
+'ALI':
+  name: Aluminum
+  asset_class: Commodity
+  sector: Metals
+  sub_sector: Base
+'HG':
+  name: Copper
+  asset_class: Commodity
+  sector: Metals
+  sub_sector: Base
+
+# Commodity - Metals - Industrial
+'HRC':
+  name: Hot Rolled Coil Steel
+  asset_class: Commodity
+  sector: Metals
+  sub_sector: Industrial
+
+# Commodity - Metals - Precious
+'GC':
+  name: Gold
+  asset_class: Commodity
+  sector: Metals
+  sub_sector: Precious
+'MGC':
+  name: Micro Gold
+  asset_class: Commodity
+  sector: Metals
+  sub_sector: Precious
+'PA':
+  name: Palladium
+  asset_class: Commodity
+  sector: Metals
+  sub_sector: Precious
+'PL':
+  name: Platinum
+  asset_class: Commodity
+  sector: Metals
+  sub_sector: Precious
+'SI':
+  name: Silver
+  asset_class: Commodity
+  sector: Metals
+  sub_sector: Precious
+
+# Crypto - Digital
 'MBT':
   name: Micro Bitcoin
   asset_class: Crypto
   sector: Digital
-'MCL':
-  name: Micro Crude Oil
-  asset_class: Energy
-  sector: Light Sweet
-'MES':
-  name: Micro E-mini S&P 500
-  asset_class: Equity
-  sector: US
+  sub_sector: Bitcoin
 'MET':
   name: Micro Ether
   asset_class: Crypto
   sector: Digital
-'MGC':
-  name: Micro Gold
-  asset_class: Metals
-  sector: Precious
-'MNG':
-  name: Micro Natural Gas
-  asset_class: Energy
-  sector: Natural Gas
-'MNQ':
-  name: Micro E-mini Nasdaq-100
-  asset_class: Equity
-  sector: US
-'MYM':
-  name: Micro E-mini Dow
-  asset_class: Equity
-  sector: US
-'NG':
-  name: Natural Gas
-  asset_class: Energy
-  sector: Natural Gas
+  sub_sector: Ethereum
+
+# Equity - Developed - Asia
 'NIY':
   name: Nikkei/USD
   asset_class: Equity
-  sector: Asia
+  sector: Developed
+  sub_sector: Japan
 'NKD':
   name: Nikkei 225
   asset_class: Equity
-  sector: Asia
-'PA':
-  name: Palladium
-  asset_class: Metals
-  sector: Precious
-'PL':
-  name: Platinum
-  asset_class: Metals
-  sector: Precious
-'PRK':
-  name: Pork Cutout
-  asset_class: Agriculture
-  sector: Livestock
-'RB':
-  name: RBOB Gasoline
-  asset_class: Energy
-  sector: Refined
-'RP':
-  name: Euro/British Pound
-  asset_class: FX
-  sector: Cross Rates
+  sector: Developed
+  sub_sector: Japan
+
+# Equity - Developed - US
+'EMD':
+  name: E-mini S&P MidCap 400
+  asset_class: Equity
+  sector: Developed
+  sub_sector: US
+'ES':
+  name: E-mini S&P 500
+  asset_class: Equity
+  sector: Developed
+  sub_sector: US
+'M2K':
+  name: Micro Russell 2000
+  asset_class: Equity
+  sector: Developed
+  sub_sector: US
+'MES':
+  name: Micro E-mini S&P 500
+  asset_class: Equity
+  sector: Developed
+  sub_sector: US
+'MNQ':
+  name: Micro E-mini Nasdaq-100
+  asset_class: Equity
+  sector: Developed
+  sub_sector: US
+'MYM':
+  name: Micro E-mini Dow
+  asset_class: Equity
+  sector: Developed
+  sub_sector: US
 'RTY':
   name: E-mini Russell 2000
   asset_class: Equity
-  sector: US
-'RX':
-  name: Euro-Bund
-  asset_class: Rates
-  sector: European
-'SI':
-  name: Silver
-  asset_class: Metals
-  sector: Precious
+  sector: Developed
+  sub_sector: US
+'YM':
+  name: E-mini Dow
+  asset_class: Equity
+  sector: Developed
+  sub_sector: US
+
+# Equity - Emerging - Global
+'EHR':
+  name: E-mini FTSE Emerging Index
+  asset_class: Equity
+  sector: Emerging
+  sub_sector: Global
+
+# FX - Developed
+'6A':
+  name: Australian Dollar
+  asset_class: FX
+  sector: Developed
+  sub_sector: AUD
+'6B':
+  name: British Pound
+  asset_class: FX
+  sector: Developed
+  sub_sector: GBP
+'6C':
+  name: Canadian Dollar
+  asset_class: FX
+  sector: Developed
+  sub_sector: CAD
+'6E':
+  name: Euro FX
+  asset_class: FX
+  sector: Developed
+  sub_sector: EUR
+'6J':
+  name: Japanese Yen
+  asset_class: FX
+  sector: Developed
+  sub_sector: JPY
+'6N':
+  name: New Zealand Dollar
+  asset_class: FX
+  sector: Developed
+  sub_sector: NZD
+'6S':
+  name: Swiss Franc
+  asset_class: FX
+  sector: Developed
+  sub_sector: CHF
+'RP':
+  name: Euro/British Pound
+  asset_class: FX
+  sector: Developed
+  sub_sector: EUR/GBP
+
+# FX - Emerging
+'6L':
+  name: Mexican Peso
+  asset_class: FX
+  sector: Emerging
+  sub_sector: MXN
+'6M':
+  name: Brazilian Real
+  asset_class: FX
+  sector: Emerging
+  sub_sector: BRL
+'6Z':
+  name: South African Rand
+  asset_class: FX
+  sector: Emerging
+  sub_sector: ZAR
 'SIR':
   name: Indian Rupee
   asset_class: FX
   sector: Emerging
-'SR3':
-  name: 3-Month SOFR
+  sub_sector: INR
+
+# Rates - Developed - European
+'RX':
+  name: Euro-Bund
   asset_class: Rates
-  sector: US
-'TBF3':
-  name: 3-Year T-Note
-  asset_class: Rates
-  sector: US
-'TN':
-  name: Ultra 10-Year US T-Notes
-  asset_class: Rates
-  sector: US
-'UB':
-  name: Ultra T-Bond
-  asset_class: Rates
-  sector: US
-'YM':
-  name: E-mini Dow
-  asset_class: Equity
-  sector: US
+  sector: Developed
+  sub_sector: EUR
 'Z3N':
   name: 3-Month Euribor
   asset_class: Rates
-  sector: European
+  sector: Developed
+  sub_sector: EUR
+
+# Rates - Developed - US
+'SR3':
+  name: 3-Month SOFR
+  asset_class: Rates
+  sector: Developed
+  sub_sector: US
+'TBF3':
+  name: 3-Year T-Note
+  asset_class: Rates
+  sector: Developed
+  sub_sector: US
+'TN':
+  name: Ultra 10-Year US T-Notes
+  asset_class: Rates
+  sector: Developed
+  sub_sector: US
+'UB':
+  name: Ultra T-Bond
+  asset_class: Rates
+  sector: Developed
+  sub_sector: US
 'ZB':
   name: 30-Year T-Bond
   asset_class: Rates
-  sector: US
-'ZC':
-  name: Corn
-  asset_class: Agriculture
-  sector: Grains
+  sector: Developed
+  sub_sector: US
 'ZF':
   name: 5-Year T-Note
   asset_class: Rates
-  sector: US
-'ZL':
-  name: Soybean Oil
-  asset_class: Agriculture
-  sector: Oilseeds
-'ZM':
-  name: Soybean Meal
-  asset_class: Agriculture
-  sector: Oilseeds
+  sector: Developed
+  sub_sector: US
 'ZN':
   name: 10-Year T-Note
   asset_class: Rates
-  sector: US
-'ZO':
-  name: Oats
-  asset_class: Agriculture
-  sector: Grains
-'ZR':
-  name: Rough Rice
-  asset_class: Agriculture
-  sector: Grains
-'ZS':
-  name: Soybeans
-  asset_class: Agriculture
-  sector: Oilseeds
+  sector: Developed
+  sub_sector: US
 'ZT':
   name: 2-Year T-Note
   asset_class: Rates
-  sector: US
-'ZW':
-  name: Chicago SRW Wheat
-  asset_class: Agriculture
-  sector: Grains
+  sector: Developed
+  sub_sector: US
