@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 import ibis
+import pandas as pd
 import yaml
 
 
@@ -29,8 +30,24 @@ class Mantle:
     ) -> ibis.expr.types.Table:
         cfg = self._config[table]
 
-        s3_path = f's3://{self._s3_bucket}{cfg["path"]}*.parquet'
+        # TODO: this belongs in some helper
+        partition = cfg.get('partition', {})
+        if partition.get('freq') == 'monthly' and start_date and end_date:
+            # only scan the necessary files
+            yearmonths = (
+                pd.date_range(
+                    start=max(start_date, cfg.get('first', start_date)),
+                    end=end_date,
+                    freq='MS',  # Month Start
+                )
+                .strftime('%Y%m')
+                .tolist()
+            )
+            s3_path = [f's3://{self._s3_bucket}{cfg["path"]}{ym}.parquet' for ym in yearmonths]
+        else:
+            s3_path = f's3://{self._s3_bucket}{cfg["path"]}*.parquet'
         table = self.get_files(s3_path)
+        #
         if start_date:
             table = table.filter(table.date >= start_date)
         if end_date:
@@ -39,8 +56,10 @@ class Mantle:
             table = table.select(columns)
         return table
 
-    def get_files(self, path: str) -> ibis.expr.types.Table:
-        p = Path(path)
+    def get_files(self, path: str | list[str]) -> ibis.expr.types.Table:
+        if isinstance(path, str):
+            path = [path]
+        p = Path(path[0])
         match p.suffix:
             case '.csv':
                 return self._con.read_csv(path)

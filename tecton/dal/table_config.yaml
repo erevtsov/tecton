@@ -6,5 +6,11 @@ equity_prices:
   path: '/equity/prices/'
 futures:
   path: '/futures/'
+  partition: 
+    freq: 'monthly'
+    first: 2010-06-01
 futures_cont:
   path: '/futures-cont/'
+  partition:
+    freq: 'monthly'
+    first: 2010-06-01
