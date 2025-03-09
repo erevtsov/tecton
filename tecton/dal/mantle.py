@@ -36,7 +36,7 @@ class Mantle:
             # only scan the necessary files
             yearmonths = (
                 pd.date_range(
-                    start=max(start_date, cfg.get('first', start_date)),
+                    start=max(start_date, partition.get('first', start_date)),
                     end=end_date,
                     freq='MS',  # Month Start
                 )
@@ -46,6 +46,7 @@ class Mantle:
             s3_path = [f's3://{self._s3_bucket}{cfg["path"]}{ym}.parquet' for ym in yearmonths]
         else:
             s3_path = f's3://{self._s3_bucket}{cfg["path"]}*.parquet'
+        print(s3_path)
         table = self.get_files(s3_path)
         #
         if start_date:
