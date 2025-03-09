@@ -15,6 +15,9 @@ source ~/.local/bin/env
 source .venv/bin/activate
 ```
 
+#### ta-lib
+https://github.com/TA-Lib/ta-lib-python
+
 ### Target Data Calls
 
 ```
@@ -26,12 +29,15 @@ Scout.fetch(Scout.tables.universe, start, end, elements=[])
 
 ### TODOs
 
-#### APIs to set up
-- alpha vantage
-- yahoo finance
-- polygon
-- tiingo
-- financial modeling prep
+#### Infrastructure
+- how to maintain dagster state after the server is shut down?
+
+#### Futures Data
+- fix the weird price bug in 2012
+- fix ts_ref missing intermittedly
+- create name map for the assets in universe
+- filter files to scan based on start/end dates
+- add data checks for partitions
 
 #### Features
 - lookback capability
