@@ -38,6 +38,7 @@ Scout.fetch(Scout.tables.universe, start, end, elements=[])
 - create name map for the assets in universe
 - filter files to scan based on start/end dates
 - add data checks for partitions
+- return data sorted...
 
 #### Features
 - lookback capability
