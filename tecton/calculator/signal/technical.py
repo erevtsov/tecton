@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import talib as ta
 
 
@@ -90,12 +89,19 @@ def macd(
     return signal
 
 
-def donchian_channels(close: np.ndarray, period: int = 20) -> np.ndarray:
+def donchian_channels(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int = 20) -> np.ndarray:
     """
-    Calculate Donchian Channel breakout signals based on closing prices.
-    Returns vectorized binary signals for channel breakouts.
+    Calculate Donchian Channel breakout signals using vectorized operations.
+
+    Donchian Channels are volatility-based bands that generate signals when price
+    breaks out of the channel:
+    - Bullish Signal (1): When price closes above the upper band
+    - Bearish Signal (-1): When price closes below the lower band
+    - No Signal (0): When price is within the channel
 
     Args:
+        high: Array of high prices
+        low: Array of low prices
         close: Array of closing prices
         period: Lookback period (default: 20)
 
@@ -105,80 +111,61 @@ def donchian_channels(close: np.ndarray, period: int = 20) -> np.ndarray:
             -1 = bearish breakout
             0 = no signal
     """
+    # Initialize signal array
     signal = np.zeros_like(close)
 
-    # Calculate rolling max/min using rolling window
-    rolling_max = pd.Series(close).rolling(period).max()
-    rolling_min = pd.Series(close).rolling(period).min()
+    # Skip first 'period' elements as we can't calculate channels yet
+    for i in range(period, len(close)):
+        # Calculate channels from previous period's data
+        lookback_high = np.max(high[i - period : i])  # Upper channel
+        lookback_low = np.min(low[i - period : i])  # Lower channel
 
-    # Shift by 1 to compare current price with previous period's channels
-    prev_max = rolling_max.shift(1)
-    prev_min = rolling_min.shift(1)
-
-    # Generate signals using vectorized operations
-    signal = np.where(close > prev_max, 1, np.where(close < prev_min, -1, 0))
-
-    # First period values should be 0
-    signal[:period] = 0
+        # Generate signals based on current close vs previous channels
+        if close[i] > lookback_high:
+            signal[i] = 1  # Bullish breakout
+        elif close[i] < lookback_low:
+            signal[i] = -1  # Bearish breakout
+        # else: signal remains 0 (no breakout)
 
     return signal
 
 
-def adx(
-    high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int = 14
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def adx(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int = 14, threshold: float = 25.0) -> np.ndarray:
     """
-    Calculate Average Directional Index (ADX).
+    Calculate ADX-based signal weight.
 
-    ADX measures trend strength regardless of direction, while +DI and -DI
-    indicate trend direction:
-    - ADX: Trend strength (0-100)
-    - +DI: Positive directional movement
-    - -DI: Negative directional movement
+    Provides a dynamic weight (0-1) based on trend strength:
+    - Strong trends (ADX > threshold): Higher weights
+    - Weak trends (ADX < threshold): Lower weights
 
-    Interpretation:
-    1. ADX Values:
-       - 0-25: Weak trend / No trend
-       - 25-50: Strong trend
-       - 50-75: Very strong trend
-       - 75-100: Extremely strong trend
-
-    2. Directional Movement:
-       - When +DI crosses above -DI: Potential bullish signal
-       - When -DI crosses above +DI: Potential bearish signal
-
-    3. Trend Confirmation:
-       - Rising ADX: Trend is strengthening
-       - Falling ADX: Trend is weakening
-       - Flat ADX: Trend strength stable
-
-    4. Best Practices:
-       - ADX > 25: Trend-following strategies more effective
-       - ADX < 25: Range-trading strategies more effective
-       - Use with price action and other indicators for confirmation
+    The weight is calculated using a sigmoid-like normalization
+    that considers both ADX value and the standard threshold of 25.
 
     Args:
         high: Array of high prices
         low: Array of low prices
         close: Array of closing prices
-        period: Calculation period (default: 14)
+        period: ADX calculation period (default: 14)
+        threshold: ADX threshold for trend strength (default: 25.0)
 
     Returns:
-        Tuple containing:
-        - adx: Average Directional Index
-        - plus_di: Positive Directional Indicator
-        - minus_di: Negative Directional Indicator
+        np.ndarray: Array of signal weights between 0 and 1, where:
+            0.0-0.3: Very weak trend
+            0.3-0.5: Weak trend
+            0.5-0.7: Moderate trend
+            0.7-1.0: Strong trend
     """
     if len(high) < period + 1:
-        return (np.array([np.nan] * len(high)), np.array([np.nan] * len(high)), np.array([np.nan] * len(high)))
+        return np.array([np.nan] * len(high))
 
+    # Calculate ADX
     adx = ta.ADX(high, low, close, timeperiod=period)
-    plus_di = ta.PLUS_DI(high, low, close, timeperiod=period)
-    minus_di = ta.MINUS_DI(high, low, close, timeperiod=period)
 
     # Replace None/inf values with NaN
     adx = np.nan_to_num(adx, nan=np.nan, posinf=np.nan, neginf=np.nan)
-    plus_di = np.nan_to_num(plus_di, nan=np.nan, posinf=np.nan, neginf=np.nan)
-    minus_di = np.nan_to_num(minus_di, nan=np.nan, posinf=np.nan, neginf=np.nan)
 
-    return adx, plus_di, minus_di
+    # Calculate normalized weights using a modified sigmoid function
+    # This provides a smooth transition around the threshold
+    weights = 1 / (1 + np.exp(-(adx - threshold) / 10))
+
+    return weights
