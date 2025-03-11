@@ -45,33 +45,19 @@ def ma_crossover(close: np.ndarray, fast_period: int = 10, slow_period: int = 20
 
 
 def macd(
-    close: np.ndarray, fast_period: int = 12, slow_period: int = 26, signal_period: int = 9
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    close: np.ndarray,
+    fast_period: int = 12,
+    slow_period: int = 26,
+    signal_period: int = 9,
+) -> np.ndarray:
     """
-    Calculate MACD (Moving Average Convergence Divergence).
+    Calculate MACD (Moving Average Convergence Divergence) crossover signals.
 
-    MACD is a trend-following momentum indicator showing the relationship between
-    two moving averages of an asset's price:
-    - MACD Line: Difference between fast and slow EMAs
-    - Signal Line: EMA of MACD line
-    - Histogram: Difference between MACD and signal lines
-
-    Interpretation:
-    1. Crossovers:
-       - Bullish: MACD crosses above signal line
-       - Bearish: MACD crosses below signal line
-
-    2. Histogram:
-       - Increasing histogram = strengthening trend
-       - Decreasing histogram = weakening trend
-
-    3. Divergence:
-       - Bullish: Price makes lower lows while MACD makes higher lows
-       - Bearish: Price makes higher highs while MACD makes lower highs
-
-    4. Centerline Crossovers:
-       - Bullish: MACD crosses above zero
-       - Bearish: MACD crosses below zero
+    MACD is a trend-following momentum indicator that generates signals when the MACD
+    line crosses the signal line:
+    - Bullish Signal (1): When MACD crosses above signal line
+    - Bearish Signal (-1): When MACD crosses below signal line
+    - No Signal (0): When no crossover occurs
 
     Args:
         close: Array of closing prices
@@ -80,12 +66,27 @@ def macd(
         signal_period: Period for signal line EMA (default: 9)
 
     Returns:
-        Tuple containing:
-        - macd: MACD line (fast EMA - slow EMA)
-        - signal: Signal line (EMA of MACD)
-        - histogram: MACD histogram (MACD - signal)
+        np.ndarray: Array of signals where:
+            1 = bullish crossover
+            -1 = bearish crossover
+            0 = no signal
     """
-    return ta.MACD(close, fastperiod=fast_period, slowperiod=slow_period, signalperiod=signal_period)
+    macd_line, signal_line, _ = ta.MACD(
+        close, fastperiod=fast_period, slowperiod=slow_period, signalperiod=signal_period
+    )
+
+    # Calculate crossover signals
+    signal = np.zeros_like(close)
+    signal[1:] = np.where(
+        (macd_line[1:] > signal_line[1:]) & (macd_line[:-1] <= signal_line[:-1]),
+        1,  # Bullish crossover
+        np.where(
+            (macd_line[1:] < signal_line[1:]) & (macd_line[:-1] >= signal_line[:-1]),
+            -1,  # Bearish crossover
+            0,
+        ),
+    )
+    return signal
 
 
 def donchian_channels(high: np.ndarray, low: np.ndarray, period: int = 20) -> tuple[np.ndarray, np.ndarray, np.ndarray]:

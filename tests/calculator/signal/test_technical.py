@@ -27,17 +27,19 @@ def test_ma_crossover(sample_data):
     assert signals[0] == 0
 
 
-def test_macd(sample_data):
-    _, _, close = sample_data
-    macd, signal, hist = macd(close, fast_period=3, slow_period=5, signal_period=2)
+def test_macd():
+    # Test data: price trending up, then down
+    close = np.array([10.0, 11, 12, 13, 14, 15, 14, 13, 12, 11])
 
-    # Verify shapes
-    assert len(macd) == len(close)
+    signal = macd(close, fast_period=2, slow_period=4, signal_period=2)
+
+    # Verify signal array properties
+    assert isinstance(signal, np.ndarray)
     assert len(signal) == len(close)
-    assert len(hist) == len(close)
+    assert set(np.unique(signal)).issubset({-1, 0, 1})  # Signal should only contain -1, 0, 1
 
-    # Verify histogram is macd - signal
-    np.testing.assert_array_almost_equal(hist, macd - signal)
+    # First element should be 0 as we can't calculate signal for it
+    assert signal[0] == 0
 
 
 def test_donchian_channels(sample_data):
@@ -66,21 +68,21 @@ def test_donchian_channels(sample_data):
 def test_adx(sample_data):
     high, low, close = sample_data
     period = 3
-    adx, plus_di, minus_di = adx(high, low, close, period=period)
+    score, plus_di, minus_di = adx(high, low, close, period=period)
 
     # Verify shapes
-    assert len(adx) == len(close)
+    assert len(score) == len(close)
     assert len(plus_di) == len(close)
     assert len(minus_di) == len(close)
 
     # First period values should be NaN due to initialization
-    assert np.all(np.isnan(adx[:period]))
+    assert np.all(np.isnan(score[:period]))
     assert np.all(np.isnan(plus_di[:period]))
     assert np.all(np.isnan(minus_di[:period]))
 
     # Verify ADX and DI ranges for non-NaN values
-    valid_idx = ~np.isnan(adx)
-    assert np.all((adx[valid_idx] >= 0) & (adx[valid_idx] <= 100))
+    valid_idx = ~np.isnan(score)
+    assert np.all((score[valid_idx] >= 0) & (score[valid_idx] <= 100))
     assert np.all((plus_di[valid_idx] >= 0) & (plus_di[valid_idx] <= 100))
     assert np.all((minus_di[valid_idx] >= 0) & (minus_di[valid_idx] <= 100))
 
