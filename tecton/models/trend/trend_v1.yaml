@@ -1,0 +1,45 @@
+code: trend_v1
+universe:
+date_active:
+date_inactive: 9999-12-31  
+ffill_limit: 8
+factor_structure:
+  - ma_crossover:
+      code: 'ma_crossover'
+      weight: 1/3
+      members:
+        - mac_5_20:
+            implementation: &mac_implementation
+              module: tecton.calculator.signal.technical
+              object: null
+              function: ma_crossover
+            weight: 0.2
+            params:
+              short_window: 5
+              long_window: 20
+  - macd:
+      code: 'macd'
+      weight: 1/3
+      members:
+        implementation: &macd_implementation
+          module: tecton.calculator.signal.technical
+          object: null
+          function: macd
+          weight: 0.2
+          params:
+            short_window: 12
+            long_window: 26
+            signal_window: 9
+  - donchian_channel:
+      code: 'donchian_channel'
+      weight: 1/3
+      members:
+        implementation: &donchian_channel_implementation
+          module: tecton.calculator.signal.technical
+          object: null
+          function: donchian_channel
+          weight: 0.2
+          params:
+            window: 20
+overlay:
+  - adx:
