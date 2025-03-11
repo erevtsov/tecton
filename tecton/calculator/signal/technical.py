@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import talib as ta
 
 
@@ -89,54 +90,38 @@ def macd(
     return signal
 
 
-def donchian_channels(high: np.ndarray, low: np.ndarray, period: int = 20) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def donchian_channels(close: np.ndarray, period: int = 20) -> np.ndarray:
     """
-    Calculate Donchian Channels.
-
-    Donchian Channels are volatility-based bands consisting of three lines:
-    - Upper: Highest high over the specified period
-    - Middle: Average of upper and lower bands
-    - Lower: Lowest low over the specified period
-
-    Interpretation:
-    1. Trend Direction:
-       - Uptrend: Price consistently near upper band
-       - Downtrend: Price consistently near lower band
-       - Sideways: Price oscillating around middle band
-
-    2. Breakouts:
-       - Bullish: Price breaks above upper band
-       - Bearish: Price breaks below lower band
-
-    3. Channel Width:
-       - Widening channels suggest increasing volatility
-       - Narrowing channels suggest decreasing volatility
-
-    4. Trading Signals:
-       - Traditional: Buy at upper band, sell at lower band
-       - Breakout: Enter when price moves outside the bands
-       - Mean Reversion: Enter when price reaches extremes
+    Calculate Donchian Channel breakout signals based on closing prices.
+    Returns vectorized binary signals for channel breakouts.
 
     Args:
-        high: Array of high prices
-        low: Array of low prices
+        close: Array of closing prices
         period: Lookback period (default: 20)
 
     Returns:
-        Tuple containing:
-        - upper: Upper band (highest high)
-        - middle: Middle band (average of upper and lower)
-        - lower: Lower band (lowest low)
+        np.ndarray: Array of signals where:
+            1 = bullish breakout
+            -1 = bearish breakout
+            0 = no signal
     """
-    upper = np.array([np.nan] * len(high))
-    lower = np.array([np.nan] * len(low))
+    signal = np.zeros_like(close)
 
-    for i in range(period - 1, len(high)):
-        upper[i] = np.nanmax(high[i - period + 1 : i + 1])
-        lower[i] = np.nanmin(low[i - period + 1 : i + 1])
+    # Calculate rolling max/min using rolling window
+    rolling_max = pd.Series(close).rolling(period).max()
+    rolling_min = pd.Series(close).rolling(period).min()
 
-    middle = (upper + lower) / 2
-    return upper, middle, lower
+    # Shift by 1 to compare current price with previous period's channels
+    prev_max = rolling_max.shift(1)
+    prev_min = rolling_min.shift(1)
+
+    # Generate signals using vectorized operations
+    signal = np.where(close > prev_max, 1, np.where(close < prev_min, -1, 0))
+
+    # First period values should be 0
+    signal[:period] = 0
+
+    return signal
 
 
 def adx(

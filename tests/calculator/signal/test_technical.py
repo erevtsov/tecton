@@ -42,27 +42,24 @@ def test_macd():
     assert signal[0] == 0
 
 
-def test_donchian_channels(sample_data):
-    high, low, _ = sample_data
+def test_donchian_channels():
+    # Test data with clear breakout patterns
     period = 3
-    upper, middle, lower = donchian_channels(high, low, period=period)
+    close = np.array([10, 11, 12, 13, 15, 11, 10, 9, 8, 7])
 
-    # Verify shapes
-    assert len(upper) == len(high)
-    assert len(middle) == len(high)
-    assert len(lower) == len(high)
+    signal = donchian_channels(close, period=period)
 
-    # First period-1 values should be NaN
-    assert np.all(np.isnan(upper[: period - 1]))
-    assert np.all(np.isnan(lower[: period - 1]))
-    assert np.all(np.isnan(middle[: period - 1]))
+    # Verify signal array properties
+    assert isinstance(signal, np.ndarray)
+    assert len(signal) == len(close)
+    assert set(np.unique(signal)).issubset({-1, 0, 1})
 
-    # Verify middle is average of upper and lower for non-NaN values
-    valid_idx = ~np.isnan(middle)
-    np.testing.assert_array_almost_equal(middle[valid_idx], (upper[valid_idx] + lower[valid_idx]) / 2)
+    # First period elements should be 0 as we can't calculate channels yet
+    assert np.all(signal[:period] == 0)
 
-    # Verify upper >= lower for non-NaN values
-    assert np.all(upper[valid_idx] >= lower[valid_idx])
+    # Verify specific breakouts
+    assert signal[4] == 1  # Price breaks above previous 3-period high
+    assert signal[8] == -1  # Price breaks below previous 3-period low
 
 
 def test_adx(sample_data):
@@ -94,7 +91,7 @@ def test_edge_cases():
     # Should not raise errors
     ma_crossover(min_data)
     macd(min_data)
-    donchian_channels(min_data, min_data)
+    donchian_channels(min_data)  # Remove second parameter
     adx(min_data, min_data, min_data)
 
     # Test with NaN values
@@ -103,5 +100,5 @@ def test_edge_cases():
     # Should handle NaN values without errors
     ma_crossover(nan_data)
     macd(nan_data)
-    donchian_channels(nan_data, nan_data)
+    donchian_channels(nan_data)  # Remove second parameter
     adx(nan_data, nan_data, nan_data)
