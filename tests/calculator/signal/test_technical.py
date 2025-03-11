@@ -1,11 +1,8 @@
 import numpy as np
 import pytest
-from tecton.calculator.signal.technical import (
-    calc_ma_crossover,
-    calc_macd,
-    calc_donchian_channels,
-    calc_adx
-)
+
+from tecton.calculator.signal.technical import adx, donchian_channels, ma_crossover, macd
+
 
 @pytest.fixture
 def sample_data():
@@ -15,92 +12,94 @@ def sample_data():
     low = close - 1
     return high, low, close
 
+
 def test_ma_crossover(sample_data):
     _, _, close = sample_data
-    signals = calc_ma_crossover(close, fast_period=3, slow_period=5)
-    
+    signals = ma_crossover(close, fast_period=3, slow_period=5)
+
     # Verify signal array shape
     assert len(signals) == len(close)
-    
+
     # Verify signals are -1, 0, or 1
     assert set(np.unique(signals)).issubset({-1, 0, 1})
-    
+
     # First signal should be 0 due to initialization
     assert signals[0] == 0
 
+
 def test_macd(sample_data):
     _, _, close = sample_data
-    macd, signal, hist = calc_macd(close, fast_period=3, slow_period=5, signal_period=2)
-    
+    macd, signal, hist = macd(close, fast_period=3, slow_period=5, signal_period=2)
+
     # Verify shapes
     assert len(macd) == len(close)
     assert len(signal) == len(close)
     assert len(hist) == len(close)
-    
+
     # Verify histogram is macd - signal
     np.testing.assert_array_almost_equal(hist, macd - signal)
+
 
 def test_donchian_channels(sample_data):
     high, low, _ = sample_data
     period = 3
-    upper, middle, lower = calc_donchian_channels(high, low, period=period)
-    
+    upper, middle, lower = donchian_channels(high, low, period=period)
+
     # Verify shapes
     assert len(upper) == len(high)
     assert len(middle) == len(high)
     assert len(lower) == len(high)
-    
+
     # First period-1 values should be NaN
-    assert np.all(np.isnan(upper[:period-1]))
-    assert np.all(np.isnan(lower[:period-1]))
-    assert np.all(np.isnan(middle[:period-1]))
-    
+    assert np.all(np.isnan(upper[: period - 1]))
+    assert np.all(np.isnan(lower[: period - 1]))
+    assert np.all(np.isnan(middle[: period - 1]))
+
     # Verify middle is average of upper and lower for non-NaN values
     valid_idx = ~np.isnan(middle)
-    np.testing.assert_array_almost_equal(
-        middle[valid_idx], 
-        (upper[valid_idx] + lower[valid_idx]) / 2
-    )
-    
+    np.testing.assert_array_almost_equal(middle[valid_idx], (upper[valid_idx] + lower[valid_idx]) / 2)
+
     # Verify upper >= lower for non-NaN values
     assert np.all(upper[valid_idx] >= lower[valid_idx])
+
 
 def test_adx(sample_data):
     high, low, close = sample_data
     period = 3
-    adx, plus_di, minus_di = calc_adx(high, low, close, period=period)
-    
+    adx, plus_di, minus_di = adx(high, low, close, period=period)
+
     # Verify shapes
     assert len(adx) == len(close)
     assert len(plus_di) == len(close)
     assert len(minus_di) == len(close)
-    
+
     # First period values should be NaN due to initialization
     assert np.all(np.isnan(adx[:period]))
     assert np.all(np.isnan(plus_di[:period]))
     assert np.all(np.isnan(minus_di[:period]))
-    
+
     # Verify ADX and DI ranges for non-NaN values
     valid_idx = ~np.isnan(adx)
     assert np.all((adx[valid_idx] >= 0) & (adx[valid_idx] <= 100))
     assert np.all((plus_di[valid_idx] >= 0) & (plus_di[valid_idx] <= 100))
     assert np.all((minus_di[valid_idx] >= 0) & (minus_di[valid_idx] <= 100))
 
+
 def test_edge_cases():
     # Test with minimal data
     min_data = np.array([1.0, 2.0, 3.0])
-    
+
     # Should not raise errors
-    calc_ma_crossover(min_data)
-    calc_macd(min_data)
-    calc_donchian_channels(min_data, min_data)
-    calc_adx(min_data, min_data, min_data)
-    
+    ma_crossover(min_data)
+    macd(min_data)
+    donchian_channels(min_data, min_data)
+    adx(min_data, min_data, min_data)
+
     # Test with NaN values
     nan_data = np.array([1.0, np.nan, 3.0])
-    
+
     # Should handle NaN values without errors
-    calc_ma_crossover(nan_data)
-    calc_macd(nan_data)
-    calc_donchian_channels(nan_data, nan_data)
-    calc_adx(nan_data, nan_data, nan_data)
+    ma_crossover(nan_data)
+    macd(nan_data)
+    donchian_channels(nan_data, nan_data)
+    adx(nan_data, nan_data, nan_data)

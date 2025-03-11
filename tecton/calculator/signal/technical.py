@@ -1,8 +1,8 @@
 import numpy as np
 import talib as ta
-from typing import Tuple
 
-def calc_ma_crossover(close: np.ndarray, fast_period: int = 10, slow_period: int = 20) -> np.ndarray:
+
+def ma_crossover(close: np.ndarray, fast_period: int = 10, slow_period: int = 20) -> np.ndarray:
     """
     Calculate Moving Average Crossover signal.
 
@@ -19,12 +19,12 @@ def calc_ma_crossover(close: np.ndarray, fast_period: int = 10, slow_period: int
       fewer but potentially more reliable signals
     - False signals are common in choppy/sideways markets
     - Best used in conjunction with other indicators and in trending markets
-    
+
     Args:
         close: Array of closing prices
         fast_period: Period for the faster moving average (default: 10)
         slow_period: Period for the slower moving average (default: 20)
-    
+
     Returns:
         np.ndarray: Array of signals where:
             1 = bullish crossover
@@ -33,19 +33,20 @@ def calc_ma_crossover(close: np.ndarray, fast_period: int = 10, slow_period: int
     """
     fast_ma = ta.SMA(close, timeperiod=fast_period)
     slow_ma = ta.SMA(close, timeperiod=slow_period)
-    
+
     # Calculate crossover signals
     signal = np.zeros_like(close)
     signal[1:] = np.where(
-        (fast_ma[1:] > slow_ma[1:]) & (fast_ma[:-1] <= slow_ma[:-1]), 1,  # Bullish crossover
-        np.where((fast_ma[1:] < slow_ma[1:]) & (fast_ma[:-1] >= slow_ma[:-1]), -1, 0)  # Bearish crossover
+        (fast_ma[1:] > slow_ma[1:]) & (fast_ma[:-1] <= slow_ma[:-1]),
+        1,  # Bullish crossover
+        np.where((fast_ma[1:] < slow_ma[1:]) & (fast_ma[:-1] >= slow_ma[:-1]), -1, 0),  # Bearish crossover
     )
     return signal
 
-def calc_macd(close: np.ndarray, 
-              fast_period: int = 12, 
-              slow_period: int = 26, 
-              signal_period: int = 9) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+
+def macd(
+    close: np.ndarray, fast_period: int = 12, slow_period: int = 26, signal_period: int = 9
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Calculate MACD (Moving Average Convergence Divergence).
 
@@ -59,15 +60,15 @@ def calc_macd(close: np.ndarray,
     1. Crossovers:
        - Bullish: MACD crosses above signal line
        - Bearish: MACD crosses below signal line
-    
+
     2. Histogram:
        - Increasing histogram = strengthening trend
        - Decreasing histogram = weakening trend
-    
+
     3. Divergence:
        - Bullish: Price makes lower lows while MACD makes higher lows
        - Bearish: Price makes higher highs while MACD makes lower highs
-    
+
     4. Centerline Crossovers:
        - Bullish: MACD crosses above zero
        - Bearish: MACD crosses below zero
@@ -77,21 +78,17 @@ def calc_macd(close: np.ndarray,
         fast_period: Period for fast EMA (default: 12)
         slow_period: Period for slow EMA (default: 26)
         signal_period: Period for signal line EMA (default: 9)
-    
+
     Returns:
         Tuple containing:
         - macd: MACD line (fast EMA - slow EMA)
         - signal: Signal line (EMA of MACD)
         - histogram: MACD histogram (MACD - signal)
     """
-    return ta.MACD(close, 
-                  fastperiod=fast_period, 
-                  slowperiod=slow_period, 
-                  signalperiod=signal_period)
+    return ta.MACD(close, fastperiod=fast_period, slowperiod=slow_period, signalperiod=signal_period)
 
-def calc_donchian_channels(high: np.ndarray, 
-                         low: np.ndarray, 
-                         period: int = 20) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+
+def donchian_channels(high: np.ndarray, low: np.ndarray, period: int = 20) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Calculate Donchian Channels.
 
@@ -105,15 +102,15 @@ def calc_donchian_channels(high: np.ndarray,
        - Uptrend: Price consistently near upper band
        - Downtrend: Price consistently near lower band
        - Sideways: Price oscillating around middle band
-    
+
     2. Breakouts:
        - Bullish: Price breaks above upper band
        - Bearish: Price breaks below lower band
-    
+
     3. Channel Width:
        - Widening channels suggest increasing volatility
        - Narrowing channels suggest decreasing volatility
-    
+
     4. Trading Signals:
        - Traditional: Buy at upper band, sell at lower band
        - Breakout: Enter when price moves outside the bands
@@ -123,7 +120,7 @@ def calc_donchian_channels(high: np.ndarray,
         high: Array of high prices
         low: Array of low prices
         period: Lookback period (default: 20)
-    
+
     Returns:
         Tuple containing:
         - upper: Upper band (highest high)
@@ -132,18 +129,18 @@ def calc_donchian_channels(high: np.ndarray,
     """
     upper = np.array([np.nan] * len(high))
     lower = np.array([np.nan] * len(low))
-    
-    for i in range(period-1, len(high)):
-        upper[i] = np.nanmax(high[i-period+1:i+1])
-        lower[i] = np.nanmin(low[i-period+1:i+1])
-    
+
+    for i in range(period - 1, len(high)):
+        upper[i] = np.nanmax(high[i - period + 1 : i + 1])
+        lower[i] = np.nanmin(low[i - period + 1 : i + 1])
+
     middle = (upper + lower) / 2
     return upper, middle, lower
 
-def calc_adx(high: np.ndarray, 
-            low: np.ndarray, 
-            close: np.ndarray, 
-            period: int = 14) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+
+def adx(
+    high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int = 14
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Calculate Average Directional Index (ADX).
 
@@ -159,16 +156,16 @@ def calc_adx(high: np.ndarray,
        - 25-50: Strong trend
        - 50-75: Very strong trend
        - 75-100: Extremely strong trend
-    
+
     2. Directional Movement:
        - When +DI crosses above -DI: Potential bullish signal
        - When -DI crosses above +DI: Potential bearish signal
-    
+
     3. Trend Confirmation:
        - Rising ADX: Trend is strengthening
        - Falling ADX: Trend is weakening
        - Flat ADX: Trend strength stable
-    
+
     4. Best Practices:
        - ADX > 25: Trend-following strategies more effective
        - ADX < 25: Range-trading strategies more effective
@@ -179,7 +176,7 @@ def calc_adx(high: np.ndarray,
         low: Array of low prices
         close: Array of closing prices
         period: Calculation period (default: 14)
-    
+
     Returns:
         Tuple containing:
         - adx: Average Directional Index
@@ -187,17 +184,15 @@ def calc_adx(high: np.ndarray,
         - minus_di: Negative Directional Indicator
     """
     if len(high) < period + 1:
-        return (np.array([np.nan] * len(high)),
-                np.array([np.nan] * len(high)),
-                np.array([np.nan] * len(high)))
-    
+        return (np.array([np.nan] * len(high)), np.array([np.nan] * len(high)), np.array([np.nan] * len(high)))
+
     adx = ta.ADX(high, low, close, timeperiod=period)
     plus_di = ta.PLUS_DI(high, low, close, timeperiod=period)
     minus_di = ta.MINUS_DI(high, low, close, timeperiod=period)
-    
+
     # Replace None/inf values with NaN
     adx = np.nan_to_num(adx, nan=np.nan, posinf=np.nan, neginf=np.nan)
     plus_di = np.nan_to_num(plus_di, nan=np.nan, posinf=np.nan, neginf=np.nan)
     minus_di = np.nan_to_num(minus_di, nan=np.nan, posinf=np.nan, neginf=np.nan)
-    
+
     return adx, plus_di, minus_di
