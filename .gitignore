@@ -175,6 +175,8 @@ cython_debug/
 devcontainer.json
 /tmp*
 .duckdb.connect*
+.vscode/launch.json
+notebooks/
 
 # dagster storage
 /tecton/ingestion/history

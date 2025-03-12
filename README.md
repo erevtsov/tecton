@@ -36,6 +36,7 @@ Scout.fetch(Scout.tables.universe, start, end, elements=[])
 - fix the weird price bug in 2012
 - fix ts_ref missing intermittedly
 - create name map for the assets in universe
+- add open/high/low for continuous tickers
 - filter files to scan based on start/end dates
 - add data checks for partitions
 - return data sorted...
