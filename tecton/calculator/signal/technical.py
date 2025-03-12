@@ -4,21 +4,14 @@ import talib as ta
 
 def ma_crossover(close: np.ndarray, fast_period: int = 10, slow_period: int = 20) -> np.ndarray:
     """
-    Calculate Moving Average Crossover signal.
+    Calculate Moving Average position signal.
 
-    The MA crossover is a trend-following indicator that generates signals when two moving
-    averages cross each other:
-    - Bullish Signal (1): When the faster MA crosses above the slower MA, indicating
-      potential upward momentum and a buy signal
-    - Bearish Signal (-1): When the faster MA crosses below the slower MA, indicating
-      potential downward momentum and a sell signal
-    - No Signal (0): When no crossover occurs
-
-    Interpretation:
-    - The signal strength depends on the time periods chosen - longer periods generate
-      fewer but potentially more reliable signals
-    - False signals are common in choppy/sideways markets
-    - Best used in conjunction with other indicators and in trending markets
+    Generates signals based on the relative position of two moving averages:
+    - Bullish Signal (1): When faster MA is above slower MA, indicating
+      potential upward momentum
+    - Bearish Signal (-1): When faster MA is below slower MA, indicating
+      potential downward momentum
+    - No Signal (0): When MAs are equal (rare) or during initialization
 
     Args:
         close: Array of closing prices
@@ -27,19 +20,23 @@ def ma_crossover(close: np.ndarray, fast_period: int = 10, slow_period: int = 20
 
     Returns:
         np.ndarray: Array of signals where:
-            1 = bullish crossover
-            -1 = bearish crossover
-            0 = no signal
+            1 = faster MA above slower MA
+            -1 = faster MA below slower MA
+            0 = equal or initialization period
     """
     fast_ma = ta.SMA(close, timeperiod=fast_period)
     slow_ma = ta.SMA(close, timeperiod=slow_period)
 
-    # Calculate crossover signals
+    # Calculate position-based signals
     signal = np.zeros_like(close)
-    signal[1:] = np.where(
-        (fast_ma[1:] > slow_ma[1:]) & (fast_ma[:-1] <= slow_ma[:-1]),
-        1,  # Bullish crossover
-        np.where((fast_ma[1:] < slow_ma[1:]) & (fast_ma[:-1] >= slow_ma[:-1]), -1, 0),  # Bearish crossover
+    signal[fast_period:] = np.where(
+        fast_ma[fast_period:] > slow_ma[fast_period:],
+        1,  # Bullish position
+        np.where(
+            fast_ma[fast_period:] < slow_ma[fast_period:],
+            -1,  # Bearish position
+            0,  # Equal (rare)
+        ),
     )
     return signal
 

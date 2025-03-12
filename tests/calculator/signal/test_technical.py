@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import talib as ta
 
 from tecton.calculator.signal.technical import adx, donchian_channels, ma_crossover, macd
 
@@ -15,6 +16,8 @@ def sample_data():
 
 def test_ma_crossover(sample_data):
     _, _, close = sample_data
+    # Test data: trend up, then down
+    close = np.array([10, 11, 12, 13, 14, 13, 12, 11, 10, 9], dtype=float)
     signals = ma_crossover(close, fast_period=3, slow_period=5)
 
     # Verify signal array shape
@@ -23,8 +26,25 @@ def test_ma_crossover(sample_data):
     # Verify signals are -1, 0, or 1
     assert set(np.unique(signals)).issubset({-1, 0, 1})
 
-    # First signal should be 0 due to initialization
-    assert signals[0] == 0
+    # First fast_period elements should be 0 due to initialization
+    assert np.all(signals[:3] == 0)
+
+    # During uptrend, fast MA should be above slow MA (bullish)
+    uptrend_idx = 4  # After initialization period
+    assert signals[uptrend_idx] == 1
+
+    # During downtrend, fast MA should be below slow MA (bearish)
+    downtrend_idx = 8  # After price peaks and declines
+    assert signals[downtrend_idx] == -1
+
+    # Calculate actual MAs to verify signals match MA positions
+    fast_ma = ta.SMA(close, timeperiod=3)
+    slow_ma = ta.SMA(close, timeperiod=5)
+
+    # Verify signals match MA positions after initialization
+    valid_idx = ~np.isnan(fast_ma) & ~np.isnan(slow_ma)
+    expected_signals = np.where(fast_ma > slow_ma, 1, np.where(fast_ma < slow_ma, -1, 0))
+    np.testing.assert_array_equal(signals[valid_idx], expected_signals[valid_idx])
 
 
 def test_macd():
