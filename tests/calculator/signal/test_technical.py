@@ -110,34 +110,70 @@ def test_donchian_channels():
 
 
 def test_adx(sample_data):
-    high, low, close = sample_data
+    # Create test data with known trend patterns
+    close = np.array(
+        [
+            10.0,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,  # Strong uptrend
+            19,
+            18,
+            17,
+            16,
+            15,
+            14,
+            13,
+            12,
+            11,
+            10,
+        ]
+    )  # Strong downtrend
+    high = close + 0.5
+    low = close - 0.5
+
     period = 14
-    weights = adx(high, low, close, period=period)
+    threshold = 25.0
+    weights = adx(high, low, close, period=period, threshold=threshold)
 
-    # Verify shape
+    # Verify shape and initialization
     assert len(weights) == len(close)
-
-    # First period values should be NaN due to initialization
     assert np.all(np.isnan(weights[:period]))
 
-    # Verify weight ranges for non-NaN values
+    # Verify weight ranges
     valid_idx = ~np.isnan(weights)
     assert np.all((weights[valid_idx] >= 0) & (weights[valid_idx] <= 1))
 
-    # Test with threshold adjustment
+    # Get actual ADX values for comparison
+    adx_values = ta.ADX(high, low, close, timeperiod=period)
+    valid_idx = ~np.isnan(adx_values)
+
+    # Strong trend periods should have higher weights
+    strong_trend_idx = adx_values > threshold
+    weak_trend_idx = adx_values <= threshold
+
+    # Check weight distributions
+    strong_weights = weights[strong_trend_idx & valid_idx]
+    weak_weights = weights[weak_trend_idx & valid_idx]
+
+    if len(strong_weights) > 0 and len(weak_weights) > 0:
+        assert np.mean(strong_weights) > 0.5  # Strong trends should have higher weights
+        assert np.mean(weak_weights) < 0.5  # Weak trends should have lower weights
+
+    # Test threshold sensitivity
     weights_strict = adx(high, low, close, period=period, threshold=30)
     weights_loose = adx(high, low, close, period=period, threshold=20)
 
-    # Compare means only for valid (non-NaN) values
     valid_idx = ~np.isnan(weights_strict) & ~np.isnan(weights) & ~np.isnan(weights_loose)
-    if np.any(valid_idx):  # Only compare if we have valid data
-        strict_mean = np.mean(weights_strict[valid_idx])
-        base_mean = np.mean(weights[valid_idx])
-        loose_mean = np.mean(weights_loose[valid_idx])
-
-        # Allow for small numerical differences
-        assert strict_mean <= base_mean + 1e-10
-        assert loose_mean >= base_mean - 1e-10
+    if np.any(valid_idx):
+        assert np.mean(weights_strict[valid_idx]) <= np.mean(weights[valid_idx])
+        assert np.mean(weights_loose[valid_idx]) >= np.mean(weights[valid_idx])
 
 
 def test_edge_cases():
