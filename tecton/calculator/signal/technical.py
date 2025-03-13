@@ -91,12 +91,12 @@ def macd(
 
 def donchian_channels(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int = 20) -> np.ndarray:
     """
-    Calculate Donchian Channel breakout signals using vectorized operations.
+    Calculate Donchian Channel position signals using vectorized operations.
 
-    Donchian Channels are volatility-based bands that generate signals when price
-    breaks out of the channel:
-    - Bullish Signal (1): When price closes above the upper band
-    - Bearish Signal (-1): When price closes below the lower band
+    Donchian Channels are volatility-based bands that generate signals based on
+    price position relative to the channel:
+    - Bullish Signal (1): When price is above previous period's high
+    - Bearish Signal (-1): When price is below previous period's low
     - No Signal (0): When price is within the channel
 
     Args:
@@ -107,9 +107,9 @@ def donchian_channels(high: np.ndarray, low: np.ndarray, close: np.ndarray, peri
 
     Returns:
         np.ndarray: Array of signals where:
-            1 = bullish breakout
-            -1 = bearish breakout
-            0 = no signal
+            1 = price above channel
+            -1 = price below channel
+            0 = price within channel or initialization
     """
     # Initialize signal array
     signal = np.zeros_like(close)
@@ -122,10 +122,10 @@ def donchian_channels(high: np.ndarray, low: np.ndarray, close: np.ndarray, peri
 
         # Generate signals based on current close vs previous channels
         if close[i] > lookback_high:
-            signal[i] = 1  # Bullish breakout
+            signal[i] = 1  # Bullish position
         elif close[i] < lookback_low:
-            signal[i] = -1  # Bearish breakout
-        # else: signal remains 0 (no breakout)
+            signal[i] = -1  # Bearish position
+        # else: signal remains 0 (within channel)
 
     return signal
 

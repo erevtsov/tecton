@@ -72,9 +72,8 @@ def test_macd():
 
 
 def test_donchian_channels():
-    # Test data with clear breakout patterns
+    # Test data with clear position patterns
     period = 3
-    # Construct test data with clear breakout patterns
     # Index:    0   1   2   3   4   5   6   7   8   9
     close = np.array([10, 11, 12, 13, 15, 11, 10, 9, 7, 8])
     high = np.array([11, 12, 13, 14, 16, 12, 11, 10, 8, 9])
@@ -90,15 +89,24 @@ def test_donchian_channels():
     # First period elements should be 0 as we can't calculate channels yet
     assert np.all(signal[:period] == 0)
 
-    # At index 4, check if price breaks above the channel (positions 1-3)
-    prev_high = max(high[1:4])  # Should be 13 from positions 1-3
+    # Verify bullish position (above channel)
+    # At index 4, close should be above previous high (positions 1-3)
+    prev_high = max(high[1:4])  # Should be 13
     assert close[4] > prev_high  # 15 > 13
-    assert signal[4] == 1  # Should be bullish breakout
+    assert signal[4] == 1  # Should show bullish position
 
-    # At index 8, check if price breaks below the channel (positions 5-7)
-    prev_low = min(low[5:8])  # Should be 8 from positions 5-7
+    # Verify bearish position (below channel)
+    # At index 8, close should be below previous low (positions 5-7)
+    prev_low = min(low[5:8])  # Should be 8
     assert close[8] < prev_low  # 7 < 8
-    assert signal[8] == -1  # Should be bearish breakout
+    assert signal[8] == -1  # Should show bearish position
+
+    # Verify neutral position (within channel)
+    # At index 6, close should be within previous channel (positions 3-5)
+    prev_high = max(high[3:6])  # Should be 16
+    prev_low = min(low[3:6])  # Should be 10
+    assert prev_low <= close[6] <= prev_high  # 10 within [10, 16]
+    assert signal[6] == 0  # Should show neutral position
 
 
 def test_adx(sample_data):
