@@ -24,17 +24,17 @@ def sample_markets(sample_config, tmp_path):
 
 
 def test_market_creation():
-    market = Market(symbol='ES', name='E-mini S&P 500', asset_class='Equity', sector='Developed')
-    assert market.symbol == 'ES'
+    market = Market(root='ES', name='E-mini S&P 500', asset_class='Equity', sector='Developed')
+    assert market.root == 'ES'
     assert market.name == 'E-mini S&P 500'
     assert market.asset_class == 'Equity'
     assert market.sector == 'Developed'
 
 
 def test_market_immutability():
-    market = Market(symbol='ES', name='E-mini S&P 500', asset_class='Equity', sector='Developed')
+    market = Market(root='ES', name='E-mini S&P 500', asset_class='Equity', sector='Developed')
     with pytest.raises(AttributeError):
-        market.symbol = 'GC'
+        market.root = 'GC'
 
 
 def test_markets_load_from_config(sample_markets):
@@ -50,7 +50,7 @@ def test_markets_load_specific_symbols(sample_config, tmp_path):
         yaml.dump(sample_config, f)
 
     Market.__module__ = str(tmp_path)
-    markets = Markets.from_config(symbols=['ES', 'GC'])
+    markets = Markets.from_config(roots=['ES', 'GC'])
     assert len(markets) == 2
     assert 'ES' in markets
     assert 'GC' in markets

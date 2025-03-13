@@ -3,6 +3,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
+import pandas as pd
 import yaml
 
 
@@ -13,10 +14,11 @@ class Market:
     Immutable to allow use as dictionary key.
     """
 
-    symbol: str
+    root: str
     name: str
     asset_class: str
     sector: str
+    sub_sector: str
 
 
 class Markets(UserDict):
@@ -29,12 +31,12 @@ class Markets(UserDict):
         super().__init__(markets or {})
 
     @classmethod
-    def from_config(cls, symbols: list[str] | None = None, config_path: Path | None = None) -> 'Markets':
+    def from_config(cls, roots: list[str] | None = None, config_path: Path | None = None) -> 'Markets':
         """
         Load markets from config file
 
         Args:
-            symbols: Optional list of market symbols to load
+            roots: Optional list of market symbols to load
             config_path: Optional path to config file. If None, uses default
         """
         if config_path is None:
@@ -42,10 +44,14 @@ class Markets(UserDict):
         with open(config_path) as f:
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
         markets = {}
-        for symbol, data in config.items():
-            if symbols is None or symbol in symbols:
-                markets[symbol] = Market(
-                    symbol=symbol, name=data['name'], asset_class=data['asset_class'], sector=data['sector']
+        for root, data in config.items():
+            if roots is None or root in roots:
+                markets[root] = Market(
+                    root=root,
+                    name=data['name'],
+                    asset_class=data['asset_class'],
+                    sector=data['sector'],
+                    sub_sector=data.get('sub_sector', ''),
                 )
         return cls(markets)
 
@@ -71,13 +77,16 @@ class Markets(UserDict):
             New Markets instance containing only matching markets
         """
         filtered = {}
-        for symbol, market in self.data.items():
+        for root, market in self.data.items():
             if asset_class and market.asset_class != asset_class:
                 continue
             if sector and market.sector != sector:
                 continue
-            filtered[symbol] = market
+            filtered[root] = market
         return Markets(filtered)
+
+    def to_table(self) -> pd.DataFrame:
+        return pd.DataFrame.from_dict(self.data)
 
     def __iter__(self) -> Iterator[Market]:
         """Iterate over Market instances rather than symbols."""
@@ -99,7 +108,7 @@ if __name__ == '__main__':
 
     # Iterate through markets
     for market in markets:
-        print(f'{market.symbol}: {market.name}')
+        print(f'{market.root}: {market.name}')
 
     # Get unique categories
     print(f'Asset Classes: {markets.asset_classes}')
