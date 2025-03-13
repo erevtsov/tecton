@@ -48,13 +48,13 @@ def macd(
     signal_period: int = 9,
 ) -> np.ndarray:
     """
-    Calculate MACD (Moving Average Convergence Divergence) crossover signals.
+    Calculate MACD (Moving Average Convergence Divergence) position signals.
 
-    MACD is a trend-following momentum indicator that generates signals when the MACD
-    line crosses the signal line:
-    - Bullish Signal (1): When MACD crosses above signal line
-    - Bearish Signal (-1): When MACD crosses below signal line
-    - No Signal (0): When no crossover occurs
+    MACD is a trend-following momentum indicator that generates signals based on
+    the relative position of MACD line vs signal line:
+    - Bullish Signal (1): When MACD is above signal line
+    - Bearish Signal (-1): When MACD is below signal line
+    - No Signal (0): When lines are equal or during initialization
 
     Args:
         close: Array of closing prices
@@ -64,23 +64,26 @@ def macd(
 
     Returns:
         np.ndarray: Array of signals where:
-            1 = bullish crossover
-            -1 = bearish crossover
-            0 = no signal
+            1 = MACD above signal line
+            -1 = MACD below signal line
+            0 = equal or initialization period
     """
     macd_line, signal_line, _ = ta.MACD(
         close, fastperiod=fast_period, slowperiod=slow_period, signalperiod=signal_period
     )
 
-    # Calculate crossover signals
+    # Calculate position-based signals
     signal = np.zeros_like(close)
-    signal[1:] = np.where(
-        (macd_line[1:] > signal_line[1:]) & (macd_line[:-1] <= signal_line[:-1]),
-        1,  # Bullish crossover
+
+    # Start signals after initialization period
+    start_idx = max(fast_period, slow_period, signal_period)
+    signal[start_idx:] = np.where(
+        macd_line[start_idx:] > signal_line[start_idx:],
+        1,  # Bullish position
         np.where(
-            (macd_line[1:] < signal_line[1:]) & (macd_line[:-1] >= signal_line[:-1]),
-            -1,  # Bearish crossover
-            0,
+            macd_line[start_idx:] < signal_line[start_idx:],
+            -1,  # Bearish position
+            0,  # Equal
         ),
     )
     return signal

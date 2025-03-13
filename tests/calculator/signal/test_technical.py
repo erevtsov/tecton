@@ -56,10 +56,19 @@ def test_macd():
     # Verify signal array properties
     assert isinstance(signal, np.ndarray)
     assert len(signal) == len(close)
-    assert set(np.unique(signal)).issubset({-1, 0, 1})  # Signal should only contain -1, 0, 1
+    assert set(np.unique(signal)).issubset({-1, 0, 1})
 
-    # First element should be 0 as we can't calculate signal for it
-    assert signal[0] == 0
+    # First elements should be 0 during initialization
+    start_idx = max(2, 4, 2)  # max of fast, slow, signal periods
+    assert np.all(signal[:start_idx] == 0)
+
+    # Calculate actual MACD values to verify signals
+    macd_line, signal_line, _ = ta.MACD(close, fastperiod=2, slowperiod=4, signalperiod=2)
+
+    # Verify signals match MACD line position vs signal line
+    valid_idx = ~np.isnan(macd_line) & ~np.isnan(signal_line)
+    expected_signals = np.where(macd_line > signal_line, 1, np.where(macd_line < signal_line, -1, 0))
+    np.testing.assert_array_equal(signal[valid_idx], expected_signals[valid_idx])
 
 
 def test_donchian_channels():
