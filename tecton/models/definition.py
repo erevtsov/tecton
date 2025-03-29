@@ -1,17 +1,27 @@
+from collections import UserDict
 from pathlib import Path
 
 import yaml
 
 
-class ModelDefinition:
+class ModelDefinition(UserDict):
     def __init__(self, code: str):
         # load the model definition from the yaml file
         absolute_path = Path(Path(__file__).resolve().parent, f'trend/{code}.yaml').resolve()
-        self._config = yaml.safe_load(open(absolute_path))
+        config = yaml.safe_load(open(absolute_path))
+        # Initialize with empty dict if None provided
+        super().__init__(config or {})
 
     @property
     def config(self):
-        return self._config
+        return self.data
 
-    def get(self, key: str, default=None):
-        return self._config.get(key, default)
+    @property
+    def factor_structure(self):
+        return self.data.get('factor_structure', {})
+
+
+class TrendModelDefinition(ModelDefinition):
+    @property
+    def overlay(self):
+        return self.data.get('overlay', {})

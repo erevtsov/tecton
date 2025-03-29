@@ -21,25 +21,38 @@ factor_structure:
       code: 'macd'
       weight: 1/3
       members:
-        implementation: &macd_implementation
-          module: tecton.calculator.signal.technical
-          object: null
-          function: macd
-          weight: 0.2
-          params:
-            short_window: 12
-            long_window: 26
-            signal_window: 9
+        - macd_12_26_9:
+          implementation: &macd_implementation
+            module: tecton.calculator.signal.technical
+            object: null
+            function: macd
+            weight: 0.2
+            params:
+              short_window: 12
+              long_window: 26
+              signal_window: 9
   - donchian_channel:
       code: 'donchian_channel'
       weight: 1/3
       members:
-        implementation: &donchian_channel_implementation
-          module: tecton.calculator.signal.technical
-          object: null
-          function: donchian_channel
+        - donchian_channel_20:
+          implementation: &donchian_channel_implementation
+            module: tecton.calculator.signal.technical
+            object: null
+            function: donchian_channel
           weight: 0.2
           params:
             window: 20
 overlay:
   - adx:
+      code: 'adx'
+      style: 'scale'
+      members:
+        - adx_14:
+            implementation: &adx_implementation
+              module: tecton.calculator.signal.technical
+              object: null
+              function: adx
+            weight: 0.2
+            params:
+              window: 14
