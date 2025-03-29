@@ -3,7 +3,7 @@ import os
 import dagster_aws.s3 as s3
 
 
-def get_s3_resource():
+def get_s3_resource() -> s3.S3Resource:
     """
     Returns an S3 resource configured with AWS credentials from environment variables.
     """
