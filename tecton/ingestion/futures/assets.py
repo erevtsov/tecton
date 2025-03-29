@@ -28,7 +28,7 @@ desc_suffix = '.definition.csv'
     partitions_def=monthly_partitions,
     group_name='futures',
 )
-def futures_backfill_by_month(context: dg.AssetExecutionContext, s3: s3.S3Resource) -> None:
+def futures_discrete_data(context: dg.AssetExecutionContext, s3: s3.S3Resource) -> None:
     date = context.partition_key
     m = Mantle()
     date = dt.datetime.strptime(date, '%Y-%m-%d')
@@ -62,9 +62,9 @@ def futures_backfill_by_month(context: dg.AssetExecutionContext, s3: s3.S3Resour
 @dg.asset(
     partitions_def=monthly_partitions,
     group_name='futures',
-    deps=[futures_backfill_by_month],
+    deps=[futures_discrete_data],
 )
-def futures_continuous_backfill_by_month(context: dg.AssetExecutionContext, s3: s3.S3Resource) -> None:
+def futures_continuous_data(context: dg.AssetExecutionContext, s3: s3.S3Resource) -> None:
     """
     Backfill job for continuous futures data.
     Depends on the futures_backfill_by_month asset.
@@ -95,8 +95,8 @@ def futures_continuous_backfill_by_month(context: dg.AssetExecutionContext, s3: 
 # Define the Definitions object
 defs = dg.Definitions(
     assets=[
-        futures_backfill_by_month,
-        futures_continuous_backfill_by_month,
+        futures_discrete_data,
+        futures_continuous_data,
     ],
     resources={'s3': get_s3_resource()},
 )
