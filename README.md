@@ -4,14 +4,15 @@
 
 #### Install uv
 
-`curl -LsSf https://astral.sh/uv/install.sh | sh`
-
-#### sync dependencies
-`uv sync`
+```
+curl -LsSf https://astral.sh/uv/install.sh | sh
+brew install ta-lib
+source ~/.local/bin/env
+uv sync
+```
 
 #### .bashrc
 ```
-source ~/.local/bin/env
 source .venv/bin/activate
 ```
 
@@ -28,9 +29,10 @@ Scout.fetch(Scout.tables.universe, start, end, elements=[])
 ```
 
 ### TODOs
+### laptop setup
+- copy raw data files
+- implement S3 and local storage options
 
-#### Infrastructure
-- how to maintain dagster state after the server is shut down?
 
 #### Futures Data
 - fix the weird price bug in 2012
