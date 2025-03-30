@@ -1,26 +1,33 @@
 import calendar
 import datetime as dt
 import os
+from pathlib import Path
 
 import dagster as dg
-import dagster_aws.s3 as s3
 
+from tecton.core.const import StorageBackend
 from tecton.dal.mantle import Mantle
-from tecton.ingestion.apitools.aws import get_s3_resource
 from tecton.ingestion.apitools.databento import (
     process_definition_data,
     process_statistics_data,
 )
+from tecton.ingestion.apitools.writer import ParquetWriterFactory
 from tecton.ingestion.futures.ops import construct_continuous_ticker
-from tecton.ingestion.util import write_bytes
 
 monthly_partitions = dg.MonthlyPartitionsDefinition(start_date='2010-06-01', end_offset=1)
 
 # TODO: move this to a config file
-s3_bucket_name = os.environ['S3_BUCKET']
-stats_core_path = f's3://{s3_bucket_name}/databento/statistics/glbx-mdp3-'
+STORAGE_BACKEND = StorageBackend[os.environ['STORAGE_BACKEND'].upper()]
+if STORAGE_BACKEND == StorageBackend.S3:
+    s3_bucket_name = os.environ['S3_BUCKET']
+    stats_core_path = f's3://{s3_bucket_name}/databento/statistics/glbx-mdp3-'
+    desc_core_path = f's3://{s3_bucket_name}/databento/definition/glbx-mdp3-'
+elif STORAGE_BACKEND == StorageBackend.LOCAL:
+    LOCAL_DATA_DIR = os.environ['LOCAL_DATA_DIR']
+    stats_core_path = str(Path(f'{LOCAL_DATA_DIR}/databento/statistics/glbx-mdp3-').resolve())
+    desc_core_path = str(Path(f'{LOCAL_DATA_DIR}/databento/definition/glbx-mdp3-').resolve())
+
 stats_suffix = '.statistics.csv'
-desc_core_path = f's3://{s3_bucket_name}/databento/definition/glbx-mdp3-'
 desc_suffix = '.definition.csv'
 
 
@@ -28,7 +35,7 @@ desc_suffix = '.definition.csv'
     partitions_def=monthly_partitions,
     group_name='futures',
 )
-def futures_discrete_data(context: dg.AssetExecutionContext, s3: s3.S3Resource) -> None:
+def futures_discrete_data(context: dg.AssetExecutionContext) -> None:
     date = context.partition_key
     m = Mantle()
     date = dt.datetime.strptime(date, '%Y-%m-%d')
@@ -41,6 +48,7 @@ def futures_discrete_data(context: dg.AssetExecutionContext, s3: s3.S3Resource) 
     stats_path = stats_core_path + year_month + '*-' + year_month + '*' + stats_suffix
     stats = m.get_files(stats_path).to_polars()
     stats = process_statistics_data(stats)
+    # join the descriptive data with statistics data
     agg = desc.join(
         stats,
         how='left',
@@ -48,14 +56,11 @@ def futures_discrete_data(context: dg.AssetExecutionContext, s3: s3.S3Resource) 
         validate='1:1',
         coalesce=True,
     )
-    #
-    buffer = write_bytes(agg)
-    #
-    s3_client = s3.get_client()
-    s3_client.put_object(
-        Bucket=os.environ['S3_BUCKET'],
-        Key=f'futures/{year_month}.parquet',
-        Body=buffer,
+    # write output
+    writer = ParquetWriterFactory.create(storage_backend=STORAGE_BACKEND)
+    writer.write(
+        key=f'futures/{year_month}',
+        data=agg,
     )
 
 
@@ -64,7 +69,7 @@ def futures_discrete_data(context: dg.AssetExecutionContext, s3: s3.S3Resource) 
     group_name='futures',
     deps=[futures_discrete_data],
 )
-def futures_continuous_data(context: dg.AssetExecutionContext, s3: s3.S3Resource) -> None:
+def futures_continuous_data(context: dg.AssetExecutionContext) -> None:
     """
     Backfill job for continuous futures data.
     Depends on the futures_backfill_by_month asset.
@@ -81,14 +86,11 @@ def futures_continuous_data(context: dg.AssetExecutionContext, s3: s3.S3Resource
     m = Mantle()
     table = m.select('futures', start_date=start_date, end_date=end_date)
     res = construct_continuous_ticker(data=table.to_polars())
-    #
-    buffer = write_bytes(res)
-    #
-    s3_client = s3.get_client()
-    s3_client.put_object(
-        Bucket=os.environ['S3_BUCKET'],
-        Key=f'futures-cont/{year_month}.parquet',
-        Body=buffer,
+    # write results
+    writer = ParquetWriterFactory.create(storage_backend=STORAGE_BACKEND)
+    writer.write(
+        key=f'futures-cont/{year_month}',
+        data=res,
     )
 
 
@@ -98,5 +100,5 @@ defs = dg.Definitions(
         futures_discrete_data,
         futures_continuous_data,
     ],
-    resources={'s3': get_s3_resource()},
+    # resources={'storage_backend': STORAGE_BACKEND},
 )
