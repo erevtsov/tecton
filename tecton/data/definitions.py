@@ -1,6 +1,6 @@
 import dagster as dg
 
-from tecton.ingestion.futures.assets import (
+from tecton.data.futures.assets import (
     futures_continuous_data,
     futures_discrete_data,
 )

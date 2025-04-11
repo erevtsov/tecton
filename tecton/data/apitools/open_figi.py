@@ -6,7 +6,7 @@ from enum import Enum
 
 import polars as pl
 
-from tecton.ingestion.util import to_snake_case
+from tecton.data.util import to_snake_case
 
 from .api_base import JsonType, api_call
 

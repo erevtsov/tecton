@@ -179,7 +179,7 @@ devcontainer.json
 notebooks/test/
 
 # dagster storage
-/tecton/ingestion/history
-tecton/ingestion/storage
-tecton/ingestion/schedules
-tecton/ingestion/.telemetry
+/tecton/data/history
+tecton/data/storage
+tecton/data/schedules
+tecton/data/.telemetry

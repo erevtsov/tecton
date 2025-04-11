@@ -7,12 +7,12 @@ import dagster as dg
 
 from tecton.core.const import StorageBackend
 from tecton.dal.mantle import Mantle
-from tecton.ingestion.apitools.databento import (
+from tecton.data.apitools.databento import (
     process_definition_data,
     process_statistics_data,
 )
-from tecton.ingestion.apitools.writer import ParquetWriterFactory
-from tecton.ingestion.futures.ops import construct_continuous_ticker
+from tecton.data.apitools.writer import ParquetWriterFactory
+from tecton.data.futures.ops import construct_continuous_ticker
 
 monthly_partitions = dg.MonthlyPartitionsDefinition(start_date='2010-06-01', end_offset=1)
 

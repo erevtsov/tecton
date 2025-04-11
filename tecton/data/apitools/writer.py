@@ -24,8 +24,8 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from tecton.core.const import StorageBackend
-from tecton.ingestion.apitools.aws import get_s3_resource
-from tecton.ingestion.util import write_bytes
+from tecton.data.apitools.aws import get_s3_resource
+from tecton.data.util import write_bytes
 
 
 class ParquetWriter:

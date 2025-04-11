@@ -4,7 +4,7 @@ import pandas as pd  # noqa
 import polars as pl  # noqa
 
 from tecton.dal.mantle import Mantle
-from tecton.ingestion.apitools.databento import StatType  # noqa
+from tecton.data.apitools.databento import StatType  # noqa
 
 stats_path = 's3://synqvest/databento/statistics/glbx-mdp3-20120201-20120229.statistics.csv'
 desc_path = 's3://synqvest/databento/definition/glbx-mdp3-20120201-20120229.definition.csv'

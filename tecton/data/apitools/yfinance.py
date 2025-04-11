@@ -3,7 +3,7 @@ import datetime as dt
 import polars as pl
 import yfinance as yf
 
-from tecton.ingestion.util import to_snake_case
+from tecton.data.util import to_snake_case
 
 
 def get_equity_market_data(tickers: list, start_date: dt.date, end_date: dt.date, chunk=20) -> pl.DataFrame:

@@ -1,4 +1,4 @@
-from tecton.ingestion.apitools.alpha_vantage import etf_profile
+from tecton.data.apitools.alpha_vantage import etf_profile
 
 
 def test_etf_profile():

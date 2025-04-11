@@ -8,10 +8,10 @@ import polars as pl
 import yaml
 
 from tecton.dal.mantle import Mantle
-from tecton.ingestion.apitools.alpha_vantage import etf_profile
-from tecton.ingestion.apitools.open_figi import map_by_ticker
-from tecton.ingestion.apitools.yfinance import get_equity_market_data
-from tecton.ingestion.util import write_bytes
+from tecton.data.apitools.alpha_vantage import etf_profile
+from tecton.data.apitools.open_figi import map_by_ticker
+from tecton.data.apitools.yfinance import get_equity_market_data
+from tecton.data.util import write_bytes
 
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
