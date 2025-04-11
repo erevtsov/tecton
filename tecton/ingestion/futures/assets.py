@@ -92,13 +92,3 @@ def futures_continuous_data(context: dg.AssetExecutionContext) -> None:
         key=f'futures-cont/{year_month}',
         data=res,
     )
-
-
-# Define the Definitions object
-defs = dg.Definitions(
-    assets=[
-        futures_discrete_data,
-        futures_continuous_data,
-    ],
-    # resources={'storage_backend': STORAGE_BACKEND},
-)
