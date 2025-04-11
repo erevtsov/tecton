@@ -1,6 +1,7 @@
 import datetime as dt
 from enum import Enum
 
+import numpy as np
 import polars as pl
 
 
@@ -101,72 +102,33 @@ def process_definition_data(data: pl.DataFrame) -> pl.DataFrame:
 def fix_prices(
     df: pl.DataFrame,
     price_cols: list,
-    factor: float = 100,
-    threshold: float = 0.9,
-    window: int = 8,
-    max_iterations: int = 10,
 ) -> pl.DataFrame:
     """
     Fixes erroneous prices by comparing to previous median values.
     Performs multiple passes to handle consecutive price errors.
     """
-    result = df.clone()
-    prev_result = None
+    # TODO: this is sloppy, converting from polars to pandas and back...
+    px = df.to_pandas()
+    px = px.sort_values(['ts_ref', 'instrument_id'], ascending=[False, True])
+    px['return'] = px.groupby('instrument_id')['settlement_price'].pct_change()
+    px['log_return'] = round(np.log10(px['return']))
+    while (px['log_return'] > 0).sum() > 0:
+        mask = px.log_return > 0
 
-    for iteration in range(max_iterations):
-        prev_result = result.clone()
+        px.loc[mask, price_cols] = px.loc[mask, price_cols].div((10 ** px.loc[mask, 'log_return']), axis=0)
+        px['return'] = px.groupby('instrument_id')['settlement_price'].pct_change()
+        px['log_return'] = round(np.log10(px['return']))
+    px = px.sort_values(['ts_ref', 'instrument_id'], ascending=[True, True])
+    px['return'] = px.groupby('instrument_id')['settlement_price'].pct_change()
+    px['log_return'] = round(np.log10(px['return']))
+    while (px['log_return'] > 0).sum() > 0:
+        mask = px.log_return > 0
 
-        result = (
-            result.sort(['instrument_id', 'ts_ref'])
-            .group_by('instrument_id')
-            .map_groups(
-                lambda group: (
-                    group.with_columns(
-                        [
-                            pl.col(col_name)
-                            .rolling_median(
-                                window_size=window,
-                                center=False,
-                                min_periods=2,
-                            )
-                            .alias(f'{col_name}_med')
-                            for col_name in price_cols
-                        ]
-                    )
-                    .with_columns(
-                        [
-                            pl.when(
-                                (pl.col(f'{col_name}_med').is_not_null())
-                                & ((pl.col(col_name) / pl.col(f'{col_name}_med') - 1).abs() > threshold)
-                            )
-                            .then(
-                                pl.when(pl.col(col_name) > pl.col(f'{col_name}_med'))
-                                .then(pl.col(col_name) / factor)
-                                .otherwise(pl.col(col_name) * factor)
-                            )
-                            .otherwise(pl.col(col_name))
-                            .alias(col_name)
-                            for col_name in price_cols
-                        ]
-                    )
-                    .drop([f'{col_name}_med' for col_name in price_cols])
-                )
-            )
-        )
+        px.loc[mask, price_cols] = px.loc[mask, price_cols].div((10 ** px.loc[mask, 'log_return']), axis=0)
+        px['return'] = px.groupby('instrument_id')['settlement_price'].pct_change()
+        px['log_return'] = round(np.log10(px['return']))
 
-        # Check if any prices changed in this iteration
-        if iteration > 0:
-            # Compare current result with previous iteration
-            changes = False
-            for col in price_cols:
-                if not (result.get_column(col) == prev_result.get_column(col)).all():
-                    changes = True
-                    break
-
-            if not changes:
-                break
-
-    return result
+    return pl.from_pandas(px).with_columns(pl.col('ts_ref').cast(pl.Date))
 
 
 def process_statistics_data(data: pl.DataFrame) -> pl.DataFrame:
