@@ -3,56 +3,76 @@ universe:
 date_active:
 date_inactive: 9999-12-31  
 ffill_limit: 8
-factor_structure:
+factors:
   - ma_crossover:
       code: 'ma_crossover'
-      weight: 1/3
-      members:
-        - mac_5_20:
-            implementation: &mac_implementation
-              module: tecton.calculator.signal.technical
-              object: null
-              function: ma_crossover
-            weight: 0.2
-            params:
-              short_window: 5
-              long_window: 20
+      implementation: &mac_implementation
+        module: tecton.calculator.signal.technical
+        object: null
+        function: ma_crossover
+      weight: 1
+      params:
+        - '_5_20':
+          short_window: 5
+          long_window: 20
+        - '_10_50':
+          short_window: 10
+          long_window: 50
+        - '_20_100':
+          short_window: 20
+          long_window: 100
+        - '_50_200':
+          short_window: 50
+          long_window: 200
   - macd:
       code: 'macd'
-      weight: 1/3
-      members:
-        - macd_12_26_9:
-          implementation: &macd_implementation
-            module: tecton.calculator.signal.technical
-            object: null
-            function: macd
-            weight: 0.2
-            params:
-              short_window: 12
-              long_window: 26
-              signal_window: 9
+      implementation: &macd_implementation
+        module: tecton.calculator.signal.technical
+        object: null
+        function: macd
+      weight: 1
+      params:
+        - '_12_26_9':
+          short_window: 12
+          long_window: 26
+          signal_window: 9
+        - '_21_63_15':
+          short_window: 21
+          long_window: 63
+          signal_window: 15
+        - '_42_126_21':
+          short_window: 42
+          long_window: 126
+          signal_window: 21
+        - '_63_252_42':
+          short_window: 63
+          long_window: 252
+          signal_window: 42
   - donchian_channel:
       code: 'donchian_channel'
-      weight: 1/3
-      members:
-        - donchian_channel_20:
-          implementation: &donchian_channel_implementation
-            module: tecton.calculator.signal.technical
-            object: null
-            function: donchian_channel
-          weight: 0.2
-          params:
-            window: 20
+      implementation: &donchian_channel_implementation
+        module: tecton.calculator.signal.technical
+        object: null
+        function: donchian_channel
+      weight: 1
+      params:
+        - '_20':
+          window: 20
+        - '_50':
+          window: 50
+        - '_100':
+          window: 100
+        - '_200':
+          window: 200
 overlay:
   - adx:
       code: 'adx'
       style: 'scale'
-      members:
-        - adx_14:
-            implementation: &adx_implementation
-              module: tecton.calculator.signal.technical
-              object: null
-              function: adx
-            weight: 0.2
-            params:
-              window: 14
+      implementation: &adx_implementation
+        module: tecton.calculator.signal.technical
+        object: null
+        function: adx
+      weight: 1
+      params:
+        - '_63':
+          window: 63
