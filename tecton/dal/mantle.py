@@ -7,6 +7,7 @@ import pandas as pd
 import yaml
 
 from tecton.core.const import StorageBackend
+from tecton.core.util import TableConfig, TableSet
 
 
 class Mantle:
@@ -31,6 +32,7 @@ class Mantle:
             self._root_path = str(Path(os.environ['LOCAL_DATA_DIR']).resolve())
         absolute_path = Path(Path(__file__).resolve().parent, 'table_config.yaml').resolve()
         self._config = yaml.safe_load(open(absolute_path))
+        self.Tables = TableSet(self._config)
 
     def _get_file_path(self, table: str, start_date: dt.date, end_date: dt.date) -> str | list[str]:
         """
@@ -85,7 +87,7 @@ class Mantle:
 
     def select(
         self,
-        table: str,
+        table: TableConfig,
         start_date: dt.date = None,
         end_date: dt.date = None,
         columns: list | tuple = None,
@@ -100,7 +102,7 @@ class Mantle:
 
         :return: An Ibis table with the selected data, filtered by the specified date range and columns.
         """
-        path = self._get_file_path(table=table, start_date=start_date, end_date=end_date)
+        path = self._get_file_path(table=table.path, start_date=start_date, end_date=end_date)
         res = self.get_files(path)
         #
         if start_date:

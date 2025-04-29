@@ -84,7 +84,7 @@ def futures_continuous_data(context: dg.AssetExecutionContext) -> None:
     end_date = date.replace(day=calendar.monthrange(date.year, date.month)[1]).date()
     #
     m = Mantle()
-    table = m.select('futures', start_date=start_date, end_date=end_date)
+    table = m.select(m.Tables.futures.discrete, start_date=start_date, end_date=end_date)
     res = construct_continuous_ticker(data=table.to_polars())
     # write results
     writer = ParquetWriterFactory.create(storage_backend=STORAGE_BACKEND)

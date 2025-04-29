@@ -67,7 +67,7 @@ def equity_universe(s3: s3.S3Resource):
     etfs = pl.DataFrame(yaml.safe_load(open(CONFIG_FILE_PATH))['equities']['etf_universe'])
     # get all the etf_weights given a date
     s = Mantle()
-    table = s.select('etf_weights', start_date=DATE, end_date=DATE).to_polars()
+    table = s.select(s.Tables.equities.etf_weights, start_date=DATE, end_date=DATE).to_polars()
     # list of equities to map
     # set up
     equities = pl.concat([table.unique(subset=['symbol', 'exch_code'])['symbol', 'exch_code'], etfs])
@@ -87,7 +87,7 @@ def equity_universe(s3: s3.S3Resource):
 def equity_prices(s3: s3.S3Resource):
     # get the equity universe
     s = Mantle()
-    table = s.select('equity_universe', start_date=DATE, end_date=DATE)
+    table = s.select(s.Tables.equities.universe, start_date=DATE, end_date=DATE)
     # active only (should i throw these out earlier?)
     table = table.filter(table.active).to_polars()
     # get the market data

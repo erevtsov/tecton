@@ -1,16 +1,21 @@
-etf_weights:
-  path: '/equity/etf_weights/'
-equity_universe:
-  path: '/equity/universe/'
-equity_prices:
-  path: '/equity/prices/'
+equities:
+  etf_weights:
+    path: '/equity/etf_weights/'
+  universe:
+    path: '/equity/universe/'
+  prices:
+    path: '/equity/prices/'
 futures:
-  path: '/futures/'
-  partition: 
-    freq: 'monthly'
-    first: 2010-06-01
-futures_cont:
-  path: '/futures-cont/'
-  partition:
-    freq: 'monthly'
-    first: 2010-06-01
+  discrete:
+    path: '/futures/'
+    partition: 
+      freq: 'monthly'
+      first: 2010-06-01
+  cont:
+    path: '/futures-cont/'
+    partition:
+      freq: 'monthly'
+      first: 2010-06-01
+model:
+  universe:
+    path: '/model-universe/'
