@@ -17,9 +17,15 @@ Personal project to build a quant investment platform while testing out some new
     - types:
         - AlphaModel
         - RiskModel
+- Optimizer: 
+    - set up a generic problem and solve it
 - Strategy:
+    - given a model, initial holdings, get optimal portfolio + trades
 - Simulation:
+    - backtest of a Strategy.
 - Portfolio:
+    - collection/time series of holdings.
+    - perform various analytics via standard interface.
 
 #### Vision for Supported Asset Classes/Strategies
 - Futures+Forwards
@@ -56,7 +62,7 @@ https://github.com/TA-Lib/ta-lib-python
 ```
 from tecton.dal.mantle import Mantle
 
-Mantle.select(Mantle.tables.futures, start, end, elements=[])
+Mantle.select(Mantle.Tables.futures.cont, start, end, columns=[])
 
 ```
 
@@ -82,4 +88,5 @@ Mantle.select(Mantle.tables.futures, start, end, elements=[])
 #### Features
 - lookback capability
 
-
+### Design Decisions
+- yamls live close to code (instead of having a central "config" dir)
