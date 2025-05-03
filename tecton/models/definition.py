@@ -16,12 +16,12 @@ class ModelDefinition(UserDict):
     def config(self):
         return self.data
 
-    @property
-    def factor_structure(self):
-        return self.data.get('factor_structure', {})
-
 
 class TrendModelDefinition(ModelDefinition):
     @property
     def overlay(self):
         return self.data.get('overlay', {})
+
+    @property
+    def factors(self):
+        return self.data.get('factors', {})

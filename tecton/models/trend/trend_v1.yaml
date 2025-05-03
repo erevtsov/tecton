@@ -4,75 +4,72 @@ date_active:
 date_inactive: 9999-12-31  
 ffill_limit: 8
 factors:
-  - ma_crossover:
-      code: 'ma_crossover'
-      implementation: &mac_implementation
-        module: tecton.calculator.signal.technical
-        object: null
-        function: ma_crossover
-      weight: 1
-      params:
-        - '_5_20':
-          short_window: 5
-          long_window: 20
-        - '_10_50':
-          short_window: 10
-          long_window: 50
-        - '_20_100':
-          short_window: 20
-          long_window: 100
-        - '_50_200':
-          short_window: 50
-          long_window: 200
-  - macd:
-      code: 'macd'
-      implementation: &macd_implementation
-        module: tecton.calculator.signal.technical
-        object: null
-        function: macd
-      weight: 1
-      params:
-        - '_12_26_9':
-          short_window: 12
-          long_window: 26
-          signal_window: 9
-        - '_21_63_15':
-          short_window: 21
-          long_window: 63
-          signal_window: 15
-        - '_42_126_21':
-          short_window: 42
-          long_window: 126
-          signal_window: 21
-        - '_63_252_42':
-          short_window: 63
-          long_window: 252
-          signal_window: 42
-  - donchian_channel:
-      code: 'donchian_channel'
-      implementation: &donchian_channel_implementation
-        module: tecton.calculator.signal.technical
-        object: null
-        function: donchian_channel
-      weight: 1
-      params:
-        - '_20':
-          window: 20
-        - '_50':
-          window: 50
-        - '_100':
-          window: 100
-        - '_200':
-          window: 200
+  ma_crossover:
+    implementation: &mac_implementation
+      module: tecton.calculator.signal.technical
+      object: null
+      function: ma_crossover
+    weight: 1
+    params:
+      '_5_20':
+        fast_period: 5
+        slow_period: 20
+      '_10_50':
+        fast_period: 10
+        slow_period: 50
+      '_20_100':
+        fast_period: 20
+        slow_period: 100
+      '_50_200':
+        fast_period: 50
+        slow_period: 200
+  macd:
+    implementation: &macd_implementation
+      module: tecton.calculator.signal.technical
+      object: null
+      function: macd
+    weight: 1
+    params:
+      '_12_26_9':
+        fast_period: 12
+        slow_period: 26
+        signal_period: 9
+      '_21_63_15':
+        fast_period: 21
+        slow_period: 63
+        signal_period: 15
+      '_42_126_21':
+        fast_period: 42
+        slow_period: 126
+        signal_period: 21
+      '_63_252_42':
+        fast_period: 63
+        slow_period: 252
+        signal_period: 42
+  donchian_channels:
+    implementation: &donchian_channel_implementation
+      module: tecton.calculator.signal.technical
+      object: null
+      function: donchian_channels
+    weight: 1
+    params:
+      '_20':
+        period: 20
+      '_50':
+        period: 50
+      '_100':
+        period: 100
+      '_200':
+        period: 200
+# todo: add breakouts
 overlay:
-  - adx:
-      code: 'adx'
-      style: 'scale'
-      implementation: &adx_implementation
-        module: tecton.calculator.signal.technical
-        object: null
-        function: adx
-      weight: 1
-      params:
-        - '_63':
-          window: 63
+  adx:
+    style: 'scale'
+    implementation: &adx_implementation
+      module: tecton.calculator.signal.technical
+      object: null
+      function: adx
+    weight: 1
+    params:
+      '_63':
+        period: 63
