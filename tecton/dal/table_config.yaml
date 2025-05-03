@@ -17,5 +17,10 @@ futures:
       freq: 'monthly'
       first: 2010-06-01
 model:
+  factors:
+    path: '/factors/'
+    partition:
+      freq: 'monthly'
+      first: 2010-06-01
   universe:
     path: '/model-universe/'

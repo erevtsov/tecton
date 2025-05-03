@@ -34,7 +34,7 @@ class Mantle:
         self._config = yaml.safe_load(open(absolute_path))
         self.Tables = TableSet(self._config)
 
-    def _get_file_path(self, table: str, start_date: dt.date, end_date: dt.date) -> str | list[str]:
+    def _get_file_path(self, table: TableConfig, start_date: dt.date, end_date: dt.date) -> str | list[str]:
         """
         Get the file path(s) for the specified table based on the configuration and date range.
 
@@ -44,15 +44,12 @@ class Mantle:
 
         :return: A string or list of strings representing the file path(s) for the specified table.
         """
-        cfg = self._config[table]
-
-        partition = cfg.get('partition', {})
         yearmonths = None
-        if partition.get('freq') == 'monthly' and start_date and end_date:
+        if table.partition.get('freq') == 'monthly' and start_date and end_date:
             # only scan the necessary files
             yearmonths = (
                 pd.date_range(
-                    start=max(start_date, partition.get('first', start_date)),
+                    start=max(start_date, table.partition.get('first', start_date)),
                     end=end_date,
                     freq='MS',  # Month Start
                 )
@@ -60,9 +57,9 @@ class Mantle:
                 .tolist()
             )
         if yearmonths is not None and len(yearmonths) == 0:
-            path = [f'{self._storage_type_prefix}{self._root_path}{cfg["path"]}{ym}.parquet' for ym in yearmonths]
+            path = [f'{self._storage_type_prefix}{self._root_path}{table.path}{ym}.parquet' for ym in yearmonths]
         else:
-            path = f'{self._storage_type_prefix}{self._root_path}{cfg["path"]}*.parquet'
+            path = f'{self._storage_type_prefix}{self._root_path}{table.path}*.parquet'
 
         return path
 
@@ -102,7 +99,7 @@ class Mantle:
 
         :return: An Ibis table with the selected data, filtered by the specified date range and columns.
         """
-        path = self._get_file_path(table=table.path, start_date=start_date, end_date=end_date)
+        path = self._get_file_path(table=table, start_date=start_date, end_date=end_date)
         res = self.get_files(path)
         #
         if start_date:

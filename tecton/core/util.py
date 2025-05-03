@@ -75,12 +75,26 @@ class TableSet:
 
 class TableConfig:
     """
-    A configuration object for a table
+    A configuration object for a table.
+    Ensures certain properties always exist with default values, e.g., 'partition'.
+    Also enforces that required properties (currently only 'path') are present in the input dict.
     """
 
+    _always_properties = {'partition'}
+    _required_properties = {'path'}
+
     def __init__(self, data: dict):
+        # Check for required properties
+        for prop in self._required_properties:
+            if prop not in data:
+                raise ValueError(f"Missing required property '{prop}' in TableConfig data: {data}")
+        # Set all keys from data
         for key, value in data.items():
             setattr(self, key, value)
+        # Ensure always-present properties exist with default value if missing
+        for prop in self._always_properties:
+            if not hasattr(self, prop):
+                setattr(self, prop, {})
 
     def __str__(self):
         return str(getattr(self, 'path', ''))
